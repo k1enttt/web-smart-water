@@ -17,7 +17,7 @@ interface CardWrapperProps {
 
 const CardWrapper = ({ children, plant }: CardWrapperProps) => {
     return (
-        <Card className="w-[400px] shadow-md">
+        <Card className="w-[90%] min-w-[400px] shadow-md">
             <CardHeader>
                 <Header label={plant.name} />
                 {plant.short_description && 

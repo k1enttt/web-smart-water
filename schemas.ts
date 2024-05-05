@@ -5,5 +5,7 @@ export interface Plant {
     temperature: number;
     humidity: number;
     moisture: number;
+    light: number;
     is_watered: boolean;
+    is_automatic: boolean;
 }

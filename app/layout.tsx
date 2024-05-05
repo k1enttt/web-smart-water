@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
+
 import { cn } from "@/lib/utils";
+import { NavigationSidebar } from "@/components/navigation-sidebar";
 
 const font = Inter({
     weight: "500",
@@ -20,7 +22,10 @@ export default function RootLayout({
 }>) {
     return (
         <html lang="en">
-            <body className={font.className}>{children}</body>
+            <body className={cn("flex overflow-hidden", font.className)}>
+                <NavigationSidebar />
+                {children}
+            </body>
         </html>
     );
 }

@@ -32,16 +32,40 @@ export const createPlant = async (plant: Plant) => {
     return plant;
 };
 
-export const updatePlantWaterStatus = async (plant: Plant, status: boolean) => {
-    const { id } = plant;
-    // Update local state
-    const plantIndex = plants.findIndex((plant) => plant.id === id);
-    plants[plantIndex].is_watered = status;
+export const updatePlantData = async ({
+    id, 
+    name,
+    short_description,
+    temperature,
+    humidity,
+    moisture,
+    light,
+    is_watered,
+    is_automatic
+}: Plant) => {
     // Update the plant in the firebase database
     await set(child(dbRef, `plants/${id}`), {
-        ...plant,
-        is_watered: status,
+        id,
+        name,
+        short_description,
+        temperature,
+        humidity,
+        moisture,
+        light,
+        is_watered,
+        is_automatic
     });
+    // TODO: Update the plant
+};
+
+export const updatePlantAutomaticStatus = async (plantId: string, status: boolean) => {
+    // Update the plant in the firebase database
+    await set(child(dbRef, `plants/${plantId}/is_automatic`), status);
+};
+
+export const updatePlantWaterStatus = async (plantId: string, status: boolean) => {
+    // Update the plant in the firebase database
+    await set(child(dbRef, `plants/${plantId}/is_watered`), status);
 };
 
 export const updatePlant = async (plant: Plant) => {
