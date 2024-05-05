@@ -1,5 +1,6 @@
 'use server';
 import { createPlant, deletePlant, getPlants } from "@/lib/plants";
+import { Plant } from "@/schemas";
 import { NextRequest, NextResponse } from "next/server";
 
 export const GET = async (req: NextRequest) => {
@@ -12,16 +13,17 @@ export const GET = async (req: NextRequest) => {
 };
 
 export const POST = async (req: NextRequest, res: NextResponse) => {
-    const { name, description, temperature, humidity, moisture } =
+    const { name, short_description, temperature, humidity, moisture, is_watered } =
         await req.json();
     try {
-        const plant = {
+        const plant: Plant = {
             name,
-            description,
+            short_description,
             id: Date.now().toString(),
             temperature,
             humidity,
             moisture,
+            is_watered,
         };
         await createPlant(plant);
         return NextResponse.json({ status: 200, body: plant });

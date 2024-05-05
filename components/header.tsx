@@ -5,7 +5,7 @@ const font = Poppins({
     subsets: ["latin"],
 });
 
-export const Header = ({ label} : { label: string}) => {
+export const Header = ({ label } : { label: string}) => {
     return (
         <div className={cn(
             "w-full flex items-center justify-center", 

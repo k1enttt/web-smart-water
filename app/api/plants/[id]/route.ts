@@ -14,9 +14,9 @@ export const GET = async (req: NextRequest) => {
 
 export const PUT = async (req: NextRequest) => {
 try {
-    const { name, description, tempature, humidity, moisture} = await req.json();
+    const { name, short_description, temperature, humidity, moisture} = await req.json();
     const id = req.url.split("plants/")[1];
-    const plant = await updatePlant({id, name, description, tempature, humidity, moisture});
+    const plant = await updatePlant({id, name, short_description, temperature, humidity, moisture, is_watered: false});
     return NextResponse.json({ status: 200, body: plant});
 } catch (error) {
     return NextResponse.json({ status: 500, body: error });
