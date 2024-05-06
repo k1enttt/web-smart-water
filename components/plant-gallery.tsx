@@ -6,7 +6,7 @@ export const PlantGallery = async () => {
     const plantList: Plant[] = await getPlants().then((snapshot) => snapshot.val());
 
     return (
-        <div className="h-full w-full flex flex-col items-center gap-y-10">
+        <div className="w-full flex flex-col items-center justify-center gap-y-4">
             {plantList.map((plant) => <PlantCard key={plant.id} plant={plant} />)}
         </div>  
     );

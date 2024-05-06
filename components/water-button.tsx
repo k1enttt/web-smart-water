@@ -1,6 +1,6 @@
 'use client';
 import { Button } from "@/components/ui/button";
-import { db, dbRef, listenOnChangeById, plants, updatePlantWaterStatus } from "@/lib/plants";
+import { db, dbRef, plants, updatePlantWaterStatus } from "@/lib/plants";
 import { Plant } from "@/schemas";
 import { child, off, onValue, ref, } from "firebase/database";
 import { useEffect, useState } from "react";
