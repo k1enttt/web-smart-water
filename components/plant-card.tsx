@@ -6,12 +6,13 @@ import { PercentageRow } from "@/components/percentage-row";
 export const PlantCard = ({ plant }: { plant: Plant }) => {
     return (
         <CardWrapper plant={plant}>
-            <div className="w-full flex items-center justify-center object-contain">
-                <PercentageRow label="Humidity" percentage={plant.humidity} />
-                <PercentageRow label="Moisture" percentage={plant.moisture} />
+            <div className="w-full flex items-center justify-center object-contain, overflow-x-auto">
+                <PercentageRow label="Humidity" value={plant.humidity} testPlantId={plant.id} />
+                <PercentageRow label="Moisture" value={plant.moisture} testPlantId={plant.id} />
                 <PercentageRow
                     label="Temperature"
-                    percentage={plant.temperature}
+                    value={plant.temperature}
+                    testPlantId={plant.id}
                 />
             </div>
         </CardWrapper>

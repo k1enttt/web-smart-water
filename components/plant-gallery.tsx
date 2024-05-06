@@ -1,13 +1,20 @@
+'use client';
 import { PlantCard } from "./plant-card";
-import { getPlants, plants } from "@/lib/plants";
 import { Plant } from "@/schemas";
 
-export const PlantGallery = async () => {
-    const plantList: Plant[] = await getPlants().then((snapshot) => snapshot.val());
+import { useState, useEffect, useTransition } from "react";
+
+export const PlantGallery = ({plantList} : {plantList : Plant[]}) => {
+    const [plants, setPlants] = useState(plantList);
+
+    useEffect(() => {
+        setPlants(plantList);
+    }, [plantList]);
+    
 
     return (
         <div className="w-full flex flex-col items-center justify-center gap-y-4">
-            {plantList.map((plant) => <PlantCard key={plant.id} plant={plant} />)}
-        </div>  
+            {plants.map((plant) => <PlantCard key={plant.id} plant={plant} />)}
+        </div>
     );
 };

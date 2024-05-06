@@ -1,25 +1,36 @@
+import { hours, data } from "@/data/plant";
 import { LineChart } from "@mui/x-charts/LineChart";
 
 interface PercentageRowProps {
   label: "Humidity" | "Temperature" | "Moisture";
-  percentage: number;
+  value: number;
+  testPlantId: string
 }
 
-export const PercentageRow = ({ label, percentage }: PercentageRowProps) => {
+export const PercentageRow = ({ label, value, testPlantId }: PercentageRowProps) => {
+  // Make testPlantId to a number
+  const id = parseInt(testPlantId);
+
   return (
     <div className="flex flex-col justify-between">
       <div className="flex justify-around">
         <span>{label}</span>
         <span>
-          {percentage}
+          {value}
           {label === "Temperature" ? "°C" : "%"}
         </span>
       </div>
       <LineChart
-        xAxis={[{ data: [1, 2, 3, 5, 8, 10] }]}
+        xAxis={[{ data: hours , min: 0, max: 23 }]}
         series={[
           {
-            data: [2, 5.5, 2, 8.5, 1.5, 5],
+            curve: "linear", 
+            data: (label === "Temperature" 
+              ? data[id].temperature 
+              : label === "Humidity" 
+                ? data[id].humidity 
+                : data[id].moisture),
+            valueFormatter: (v) => `${v}${label === "Temperature" ? "°C" : "%"}`,
           },
         ]}
         width={450}

@@ -8,8 +8,6 @@ const rtdbUrl =
 
 export const db = getDatabase(firebaseApp, rtdbUrl);
 
-
-
 export const dbRef = ref(db);
 
 export const getPlants = async () =>
