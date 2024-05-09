@@ -1,22 +1,24 @@
-import { hours, data } from "@/data/plant";
+import { hours, newdata as data } from "@/data/plant";
+import { Plant } from "@/schemas";
 import { LineChart } from "@mui/x-charts/LineChart";
 
 interface PercentageRowProps {
   label: "Humidity" | "Temperature" | "Moisture";
-  value: number;
-  testPlantId: string
+  plant: Plant;
 }
 
-export const PercentageRow = ({ label, value, testPlantId }: PercentageRowProps) => {
+export const PercentageRow = ({ label, plant }: PercentageRowProps) => {
   // Make testPlantId to a number
-  const id = parseInt(testPlantId);
+  const temperature = plant.daylogs.map((d) => d.temperature);
+  const humidity = plant.daylogs.map((d) => d.humidity);
+  const moisture = plant.daylogs.map((d) => d.moisture);
 
   return (
     <div className="flex flex-col justify-between">
       <div className="flex justify-around">
         <span>{label}</span>
         <span>
-          {value}
+          {plant[label.toLowerCase() as "temperature" | "humidity" | "moisture"]}
           {label === "Temperature" ? "°C" : "%"}
         </span>
       </div>
@@ -26,10 +28,10 @@ export const PercentageRow = ({ label, value, testPlantId }: PercentageRowProps)
           {
             curve: "linear", 
             data: (label === "Temperature" 
-              ? data[id].temperature 
+              ? temperature
               : label === "Humidity" 
-                ? data[id].humidity 
-                : data[id].moisture),
+                ? humidity
+                : moisture),
             valueFormatter: (v) => `${v}${label === "Temperature" ? "°C" : "%"}`,
           },
         ]}

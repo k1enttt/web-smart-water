@@ -47,7 +47,11 @@ export const updatePlantData = async ({
     light,
     is_watered,
     is_automatic,
-  });
+  })
+    .then((response) => response)
+    .catch((error) => {
+      throw new Error(error);
+    });
   // TODO: Update the plant
 };
 
