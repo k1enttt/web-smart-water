@@ -9,9 +9,9 @@ interface PercentageRowProps {
 
 export const PercentageRow = ({ label, plant }: PercentageRowProps) => {
   // Make testPlantId to a number
-  const temperature = plant.daylogs.map((d) => d.temperature);
-  const humidity = plant.daylogs.map((d) => d.humidity);
-  const moisture = plant.daylogs.map((d) => d.moisture);
+  const temperature = (plant.daylogs) ? plant.daylogs.map((d) => d.temperature) : [];
+  const humidity = (plant.daylogs) ? plant.daylogs.map((d) => d.humidity): [];
+  const moisture = (plant.daylogs) ? plant.daylogs.map((d) => d.moisture): [];
 
   return (
     <div className="flex flex-col justify-between">

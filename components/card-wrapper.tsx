@@ -19,7 +19,7 @@ const CardWrapper = ({ children, plant }: CardWrapperProps) => {
     return (
         <Card className="w-[90%] min-w-[400px] shadow-md">
             <CardHeader>
-                <Header label={plant.name} />
+                <Header label={plant.name || "New plant"} />
                 {plant.short_description && 
                 <div className="text-gray-400 font-normal text-center">
                     {plant.short_description}

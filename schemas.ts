@@ -14,8 +14,8 @@ export interface Plant {
 export interface DayLog {
     id: string;
     time: string;
-    temperature?: number;
-    humidity?: number;
-    moisture?: number;
-    light?: number;
+    temperature: number | null;
+    humidity: number | null;
+    moisture: number | null;
+    light: number | null;
 }
