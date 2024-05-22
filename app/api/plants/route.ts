@@ -13,7 +13,7 @@ export const GET = async (req: NextRequest) => {
 };
 
 export const POST = async (req: NextRequest, res: NextResponse) => {
-    const { name, short_description, temperature, humidity, moisture, light, is_watered, is_automatic } =
+    const { name, short_description, temperature, humidity, moisture, light, is_watered, is_automatic, daylogs } =
         await req.json();
     try {
         const plant: Plant = {
@@ -25,7 +25,8 @@ export const POST = async (req: NextRequest, res: NextResponse) => {
             moisture,
             light,
             is_watered,
-            is_automatic
+            is_automatic,
+            daylogs,
         };
         await createPlant(plant);
         return NextResponse.json({ status: 200, body: plant });
