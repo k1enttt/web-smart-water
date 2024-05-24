@@ -29,7 +29,7 @@ const CardWrapper = ({ children, plant }: CardWrapperProps) => {
                 {children}
             </CardContent>
             <CardFooter>
-                <AutomaticWateringSwitch />
+                <AutomaticWateringSwitch id={plant.id} />
             </CardFooter>
             <CardFooter>
                 <WaterButton plant={plant}/>
