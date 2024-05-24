@@ -1,6 +1,10 @@
+'use client';
 import { LineChart } from "@mui/x-charts/LineChart";
 export const PlantLineChart = ({hours, value, unit} : {hours: number[], value: (number | null)[], unit: string}) => {
-    const width = innerWidth * 0.7;
+    var width = 700;
+    if (typeof window !== "undefined") {
+        width = window.innerWidth * 0.7;
+    }
     return (
     <LineChart
           xAxis={[{ data: hours, min: 0, max: 23 }]}
