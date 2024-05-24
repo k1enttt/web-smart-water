@@ -1,10 +1,8 @@
 'use client';
 import { LineChart } from "@mui/x-charts/LineChart";
+import { useEffect } from "react";
 export const PlantLineChart = ({hours, value, unit} : {hours: number[], value: (number | null)[], unit: string}) => {
-    var width = 700;
-    if (typeof window !== "undefined") {
-        width = window.innerWidth * 0.7;
-    }
+    var width = 800 ;
     return (
     <LineChart
           xAxis={[{ data: hours, min: 0, max: 23 }]}

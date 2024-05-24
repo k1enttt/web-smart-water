@@ -30,24 +30,24 @@ export const PlantCard = ({ plant }: { plant: Plant }) => {
 
   return (
     <CardWrapper plant={plantData}>
-        <h2 className="text-xl font-semibold text-center py-6">Trạng thái hiện tại</h2>
+        <div className="text-xl font-semibold text-center py-6">Trạng thái hiện tại</div>
       <div className="w-full flex items-center justify-around object-contain overflow-x-auto pb-4">
         <PercentageCol type="humidity" plant={plantData} />
         <PercentageCol type="moisture" plant={plantData} />
         <PercentageCol type="temperature" plant={plantData} />
       </div>
       <div className="flex flex-col items-center justify-center">
-        <h2 className="text-lg font-semibold py-6">Biểu đồ theo giờ</h2>
+        <div className="text-lg font-semibold py-6">Biểu đồ theo giờ</div>
         <div>
-          <p>Nhiệt độ không khí</p>
+          <div>Nhiệt độ không khí</div>
           <PlantLineChart hours={hours} value={temperature} unit="°C" />
         </div>
         <div>
-          <p>Độ ẩm không khí</p>
+          <div>Độ ẩm không khí</div>
           <PlantLineChart hours={hours} value={humidity} unit="%" />
         </div>
         <div>
-          <p>Độ ẩm đất</p>
+          <div>Độ ẩm đất</div>
           <PlantLineChart hours={hours} value={moisture} unit="%" />
         </div>
       </div>
