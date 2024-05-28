@@ -8,7 +8,7 @@ const font = Poppins({
 export const Header = ({ label } : { label: string}) => {
     return (
         <div className={cn(
-            "w-full flex items-center justify-center", 
+            "w-full flex items-center justify-center text-2xl", 
             font.className
         )}>
             {label}
