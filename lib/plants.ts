@@ -79,6 +79,15 @@ export const updatePlantWaterStatus = async (
     });
 };
 
+export const updateAutomaticSwitchState = async (id: string, state: boolean) => {
+  // Update the plant in the firebase database
+  await set(child(dbRef, `plants/${id}/is_automatic`), state)
+    .then((response) => response)
+    .catch((error) => {
+      throw new Error(error);
+    });
+}
+
 export const updatePlant = async (plant: Plant) => {
   return await plants.splice(
     plants.findIndex((p) => p.id === plant.id),

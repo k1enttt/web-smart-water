@@ -10,19 +10,28 @@ export const WaterButton = ({plant} : {plant : Plant}) => {
     const [isPending, startTransition] = useTransition();
     const [isWatered, setIsWatered] = useState(plant.is_watered);
     const handleWatering = async () => {
-        const updatedStatus = !isWatered;
-        setIsWatered(updatedStatus);
-        // Update database
-        startTransition(async () => {
-            await updatePlantWaterStatus(plant.id, updatedStatus);
-        });
+        function updateState(value: boolean) {
+            setIsWatered(value);
+            // Update database
+            startTransition(async () => {
+                await updatePlantWaterStatus(plant.id, value);
+            });
+        }
+        var updatedState = true;
+        updateState(updatedState);
+
+        // Wait 3000ms to simulate watering
+        await new Promise((resolve) => setTimeout(resolve, 3000));
+
+        updatedState = false;
+        updateState(updatedState);
     };
     
     useEffect(() => {
-        const plantsRef = child(dbRef, `plants/${plant.id}`);
+        const plantsRef = child(dbRef, `plants/${plant.id}/is_watered`);
         onValue(plantsRef, (snapshot) => {
-            const data = snapshot.val() as Plant;
-            setIsWatered(data.is_watered);
+            const data = snapshot.val() as boolean;
+            setIsWatered(data);
         });
         return () => off(plantsRef);
     }, [isWatered]);
