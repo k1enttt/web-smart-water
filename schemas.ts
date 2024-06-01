@@ -1,13 +1,19 @@
 export interface Plant {
     id: string;
     name?: string;
-    short_description?: string;
+    description?: string;
+    // Giá trị cảm biến
     temperature?: number;
     humidity?: number;
     moisture?: number;
     light?: number;
-    is_watered?: boolean;
-    is_automatic?: boolean;
+    // Trạng thái tưới cây
+    water_button_state?: boolean;
+    water_mode?: number;
+    // Ngưỡng độ ẩm đất
+    low_threshold?: number;
+    high_threshold?: number;
+    // Số liệu cảm biến trong 1 ngày
     daylogs?: DayLog[];
 }
 

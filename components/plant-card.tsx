@@ -5,15 +5,14 @@ import { child, off, onValue } from "firebase/database";
 import { Plant } from "@/schemas";
 import CardWrapper from "@/components/card-wrapper";
 import { PercentageCol } from "@/components/percentage-col";
-import { dbRef, getPlantById } from "@/lib/plants";
-import { LineChart } from "@mui/x-charts/LineChart";
-import { hours, newdata as data } from "@/data/plant";
+import { dbRef } from "@/lib/plants";
+import { hours, randomDaylogs } from "@/data/plant";
 import { PlantLineChart } from "./line-chart";
 
 export const PlantCard = ({ plant }: { plant: Plant }) => {
   const [plantData, setPlantData] = useState<Plant>(plant);
   useEffect(() => {
-    const plantsRef = child(dbRef, `plants/${plant.id}`);
+    const plantsRef = child(dbRef, `plants/${plantData.id}`);
     onValue(plantsRef, (snapshot) => {
       const data = snapshot.val() as Plant;
       setPlantData(data);
@@ -21,12 +20,13 @@ export const PlantCard = ({ plant }: { plant: Plant }) => {
     return () => off(plantsRef);
   }, [plantData]);
 
-  // Line chart data
-  const temperature = plant.daylogs
-    ? plant.daylogs.map((d) => d.temperature)
-    : [];
-  const humidity = plant.daylogs ? plant.daylogs.map((d) => d.humidity) : [];
-  const moisture = plant.daylogs ? plant.daylogs.map((d) => d.moisture) : [];
+  // Line chart data  
+  // const data = randomDaylogs;
+  // TODO: Uncomment this line when the data is available
+  const data = plantData.daylogs ? plantData.daylogs : [];
+  const temperature = data.map((d) => d.temperature);
+  const humidity = data.map((d) => d.humidity);
+  const moisture = data.map((d) => d.moisture);
 
   return (
     <CardWrapper plant={plantData}>

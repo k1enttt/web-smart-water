@@ -1,4 +1,6 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { child, off, onValue } from "firebase/database";
+
 import {
     Card,
     CardHeader,
@@ -6,9 +8,10 @@ import {
     CardContent,
 } from "@/components/ui/card";
 import { Header } from "@/components/header";
-import { AutomaticWateringSwitch } from "./automatic-watering-switch";
-import { WaterButton } from "./water-button";
+import { AutomaticWateringSwitch } from "@/components/automatic-watering-switch";
+import { WaterButton } from "@/components/water-button";
 import { Plant } from "@/schemas";
+import { dbRef } from "@/lib/plants";
 
 interface CardWrapperProps {
     children: React.ReactNode;
@@ -16,20 +19,22 @@ interface CardWrapperProps {
 }
 
 const CardWrapper = ({ children, plant }: CardWrapperProps) => {
+    const defaultName = "New plant";
+
     return (
         <Card className="w-[90%] min-w-[400px] shadow-md">
             <CardHeader>
-                <Header label={plant.name || "New plant"} />
-                {plant.short_description && 
+                <Header label={plant.name || defaultName} />
+                {plant.description && 
                 <div className="text-gray-400 font-normal text-center">
-                    {plant.short_description}
+                    {plant.description}
                 </div>}
             </CardHeader>
             <CardContent>
                 {children}
             </CardContent>
             <CardFooter>
-                <AutomaticWateringSwitch id={plant.id} />
+                <AutomaticWateringSwitch plant={plant} />
             </CardFooter>
             <CardFooter>
                 <WaterButton plant={plant}/>
