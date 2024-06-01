@@ -28,25 +28,25 @@ export const createPlant = async (plant: Plant) => {
 export const updatePlantData = async ({
   id,
   name,
-  short_description,
+  description,
   temperature,
   humidity,
   moisture,
   light,
-  is_watered,
-  is_automatic,
+  water_button_state,
+  water_mode,
 }: Plant) => {
   // Update the plant in the firebase database
   await set(child(dbRef, `plants/${id}`), {
     id,
     name,
-    short_description,
+    description,
     temperature,
     humidity,
     moisture,
     light,
-    is_watered,
-    is_automatic,
+    water_button_state,
+    water_mode,
   })
     .then((response) => response)
     .catch((error) => {
@@ -55,38 +55,26 @@ export const updatePlantData = async ({
   // TODO: Update the plant
 };
 
-export const updatePlantAutomaticStatus = async (
-  plantId: string,
-  status: boolean
-) => {
-  // Update the plant in the firebase database
-  await set(child(dbRef, `plants/${plantId}/is_automatic`), status)
-    .then((response) => response)
-    .catch((error) => {
-      throw new Error(error);
-    });
-};
-
 export const updatePlantWaterStatus = async (
   plantId: string,
   status: boolean
 ) => {
   // Update the plant in the firebase database
-  await set(child(dbRef, `plants/${plantId}/is_watered`), status)
+  await set(child(dbRef, `plants/${plantId}/water_button_state`), status)
     .then((response) => response)
     .catch((error) => {
       throw new Error(error);
     });
 };
 
-export const updateAutomaticSwitchState = async (id: string, state: boolean) => {
+export const updateAutomaticSwitchState = async (id: string, state: number) => {
   // Update the plant in the firebase database
-  await set(child(dbRef, `plants/${id}/is_automatic`), state)
+  await set(child(dbRef, `plants/${id}/water_mode`), state)
     .then((response) => response)
     .catch((error) => {
       throw new Error(error);
     });
-}
+};
 
 export const updatePlant = async (plant: Plant) => {
   return await plants.splice(

@@ -5,15 +5,15 @@ import { child, off, onValue } from "firebase/database";
 import { Plant } from "@/schemas";
 import CardWrapper from "@/components/card-wrapper";
 import { PercentageCol } from "@/components/percentage-col";
-import { dbRef, getPlantById } from "@/lib/plants";
-import { LineChart } from "@mui/x-charts/LineChart";
-import { hours, newdata as data } from "@/data/plant";
+import { dbRef } from "@/lib/plants";
+import { hours, randomDaylogs } from "@/data/plant";
 import { PlantLineChart } from "./line-chart";
+import { fillDaylogs, getTodayDaylogs } from "@/lib/utils";
 
 export const PlantCard = ({ plant }: { plant: Plant }) => {
   const [plantData, setPlantData] = useState<Plant>(plant);
   useEffect(() => {
-    const plantsRef = child(dbRef, `plants/${plant.id}`);
+    const plantsRef = child(dbRef, `plants/${plantData.id}`);
     onValue(plantsRef, (snapshot) => {
       const data = snapshot.val() as Plant;
       setPlantData(data);
@@ -21,12 +21,12 @@ export const PlantCard = ({ plant }: { plant: Plant }) => {
     return () => off(plantsRef);
   }, [plantData]);
 
-  // Line chart data
-  const temperature = plant.daylogs
-    ? plant.daylogs.map((d) => d.temperature)
-    : [];
-  const humidity = plant.daylogs ? plant.daylogs.map((d) => d.humidity) : [];
-  const moisture = plant.daylogs ? plant.daylogs.map((d) => d.moisture) : [];
+  // Line chart data  
+  // const data = randomDaylogs;
+  const todayDaylogs = fillDaylogs(getTodayDaylogs(plantData.daylogs || []));
+  const temperature = todayDaylogs.map((d) => (d) ? d.temperature : null);
+  const humidity = todayDaylogs.map((d) => (d) ? d.humidity : null);
+  const moisture = todayDaylogs.map((d) => (d) ? d.moisture : null);
 
   return (
     <CardWrapper plant={plantData}>
@@ -35,6 +35,7 @@ export const PlantCard = ({ plant }: { plant: Plant }) => {
         <PercentageCol type="humidity" plant={plantData} />
         <PercentageCol type="moisture" plant={plantData} />
         <PercentageCol type="temperature" plant={plantData} />
+        <PercentageCol type="light" plant={plantData} />
       </div>
       <div className="flex flex-col items-center justify-center">
         <div className="text-lg font-semibold py-6">Biểu đồ theo giờ</div>

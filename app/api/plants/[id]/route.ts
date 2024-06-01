@@ -14,18 +14,18 @@ export const GET = async (req: NextRequest) => {
 
 export const PUT = async (req: NextRequest) => {
 try {
-    const { name, short_description, temperature, humidity, moisture, light, is_automatic, is_watered, daylogs} = await req.json();
+    const { name, description, temperature, humidity, moisture, light, water_button_state, water_mode, daylogs} = await req.json();
     const id = req.url.split("plants/")[1];
     const plant = await updatePlant({
         id, 
         name, 
-        short_description, 
+        description, 
         temperature, 
         humidity, 
         moisture, 
         light,
-        is_watered, 
-        is_automatic,
+        water_mode, 
+        water_button_state,
         daylogs
     });
     return NextResponse.json({ status: 200, body: plant});
