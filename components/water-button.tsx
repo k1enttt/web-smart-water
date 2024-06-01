@@ -28,7 +28,7 @@ export const WaterButton = ({plant} : {plant : Plant}) => {
     };
 
     return (
-        <div className="w-full flex justify-center">
+        <div className="">
             <Button 
             disabled={isPending || plant.water_mode === 1}
             variant={plant.water_button_state ? "secondary" : "default"} 
