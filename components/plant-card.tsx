@@ -8,6 +8,7 @@ import { PercentageCol } from "@/components/percentage-col";
 import { dbRef } from "@/lib/plants";
 import { hours, randomDaylogs } from "@/data/plant";
 import { PlantLineChart } from "./line-chart";
+import { fillDaylogs, getTodayDaylogs } from "@/lib/utils";
 
 export const PlantCard = ({ plant }: { plant: Plant }) => {
   const [plantData, setPlantData] = useState<Plant>(plant);
@@ -22,11 +23,10 @@ export const PlantCard = ({ plant }: { plant: Plant }) => {
 
   // Line chart data  
   // const data = randomDaylogs;
-  // TODO: Uncomment this line when the data is available
-  const data = plantData.daylogs ? plantData.daylogs : [];
-  const temperature = data.map((d) => d.temperature);
-  const humidity = data.map((d) => d.humidity);
-  const moisture = data.map((d) => d.moisture);
+  const todayDaylogs = fillDaylogs(getTodayDaylogs(plantData.daylogs || []));
+  const temperature = todayDaylogs.map((d) => (d) ? d.temperature : null);
+  const humidity = todayDaylogs.map((d) => (d) ? d.humidity : null);
+  const moisture = todayDaylogs.map((d) => (d) ? d.moisture : null);
 
   return (
     <CardWrapper plant={plantData}>

@@ -11,7 +11,7 @@ export const PercentageCol = ({ type, plant }: PercentageColProps) => {
   // Make testPlantId to a number
   
   const value = plant[type as SensorType] || 0;
-  const unit = type === "temperature" ? "°C" : type == "light" ? " lx" : "%";
+  const unit = type === "temperature" ? "°C" : type == "light" ? "LX" : "%";
   const label = (type == 'humidity' ? 'Độ ẩm không khí' : type == 'temperature' ? 'Nhiệt độ không khí' : type == 'moisture' ? 'Độ ẩm đất' : 'Ánh sáng');
 
   return (
