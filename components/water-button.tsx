@@ -34,7 +34,7 @@ export const WaterButton = ({plant} : {plant : Plant}) => {
             variant={plant.water_button_state ? "secondary" : "default"} 
             onClick={handleWatering}
             className="">
-                {isWatered ? "Watered" : "Make it wet"}
+                {isWatered ? "Đang tưới..." : "Tưới cây nào!"}
             </Button>
         </div>
     );

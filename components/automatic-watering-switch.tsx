@@ -24,7 +24,7 @@ export const AutomaticWateringSwitch = ({plant} : {plant: Plant}) => {
 
   return (
     <div className="w-full flex items-center px-16 space-x-6">
-      <div>Automatic watering</div>
+      <div>Tưới cây tự động</div>
       <Switch checked={plant.water_mode === 1} onCheckedChange={handleSwitch} disabled={isPending}/>
     </div>
   );

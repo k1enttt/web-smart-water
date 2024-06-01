@@ -35,6 +35,7 @@ export const PlantCard = ({ plant }: { plant: Plant }) => {
         <PercentageCol type="humidity" plant={plantData} />
         <PercentageCol type="moisture" plant={plantData} />
         <PercentageCol type="temperature" plant={plantData} />
+        <PercentageCol type="light" plant={plantData} />
       </div>
       <div className="flex flex-col items-center justify-center">
         <div className="text-lg font-semibold py-6">Biểu đồ theo giờ</div>
