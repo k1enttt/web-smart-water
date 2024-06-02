@@ -22,18 +22,15 @@ export const PlantCard = ({ plant }: { plant: Plant }) => {
     onValue(plantsRef, (snapshot) => {
       const data = snapshot.val() as Plant;
       setPlantData(data);
+
+      // Get today's daylogs
+      setTodayDaylogs(fillDaylogs(getTodayDaylogs(data.daylogs || [])));
+      setTemperature(todayDaylogs.map((d) => (d) ? d.temperature : null));
+      setHumidity(todayDaylogs.map((d) => (d) ? d.humidity : null));
+      setMoisture(todayDaylogs.map((d) => (d) ? d.moisture : null));
     });
     return () => off(plantsRef);
   }, [plantData]);
-
-  // Line chart data  
-  // const data = randomDaylogs;
-  useEffect(() => {
-    setTodayDaylogs(fillDaylogs(getTodayDaylogs(plantData.daylogs || [])));
-    setTemperature(todayDaylogs.map((d) => (d) ? d.temperature : null));
-    setHumidity(todayDaylogs.map((d) => (d) ? d.humidity : null));
-    setMoisture(todayDaylogs.map((d) => (d) ? d.moisture : null));
-  }, [plantData.daylogs, todayDaylogs]);
 
   return (
     <CardWrapper plant={plantData}>
