@@ -11,7 +11,6 @@ import { Header } from "@/components/header";
 import { AutomaticWateringSwitch } from "@/components/automatic-watering-switch";
 import { WaterButton } from "@/components/water-button";
 import { Plant } from "@/schemas";
-import { dbRef } from "@/lib/plants";
 import { HoverWrapper } from "./hover-wrapper";
 
 interface CardWrapperProps {
@@ -38,7 +37,7 @@ const CardWrapper = ({ children, plant }: CardWrapperProps) => {
       </CardFooter>
       <CardFooter className="w-full flex justify-center">
         {plant.water_mode === 1 && (
-          <HoverWrapper message="You have to turn off Automatic Watering mode to water manually">
+          <HoverWrapper message="Bạn phải tắt chế độ tưới tự động thì mới tưới thủ công được.">
             <WaterButton plant={plant} />
           </HoverWrapper>
         )}

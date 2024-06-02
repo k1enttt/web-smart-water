@@ -1,5 +1,5 @@
 import { Plant } from "@/schemas";
-import { child, get, getDatabase, ref, set, onValue } from "firebase/database";
+import { child, get, getDatabase, ref, set } from "firebase/database";
 import { firebaseApp } from "@/lib/db";
 export let plants: Plant[] = [];
 
