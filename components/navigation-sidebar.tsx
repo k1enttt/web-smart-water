@@ -10,7 +10,7 @@ export const NavigationSidebar = () => {
           <NavigationButton href="/" label="Trang chủ" />
         </li>
         <li>
-          <NavigationButton href="/" label="Nhật ký hoạt động" />
+          <NavigationButton href="/activity-logs" label="Nhật ký hoạt động" />
         </li>
       </ul>
     </div>

@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { child, off, onValue } from "firebase/database";
 
-import { Plant } from "@/schemas";
+import { DayLog, Plant } from "@/schemas";
 import CardWrapper from "@/components/card-wrapper";
 import { PercentageCol } from "@/components/percentage-col";
 import { dbRef } from "@/lib/plants";
@@ -12,6 +12,11 @@ import { fillDaylogs, getTodayDaylogs } from "@/lib/utils";
 
 export const PlantCard = ({ plant }: { plant: Plant }) => {
   const [plantData, setPlantData] = useState<Plant>(plant);
+  const [todayDaylogs, setTodayDaylogs] = useState<(DayLog|null)[]>([]);
+  const [temperature, setTemperature] = useState<(number | null)[]>([]);
+  const [humidity, setHumidity] = useState<(number | null)[]>([]);
+  const [moisture, setMoisture] = useState<(number | null)[]>([]);
+
   useEffect(() => {
     const plantsRef = child(dbRef, `plants/${plantData.id}`);
     onValue(plantsRef, (snapshot) => {
@@ -23,10 +28,12 @@ export const PlantCard = ({ plant }: { plant: Plant }) => {
 
   // Line chart data  
   // const data = randomDaylogs;
-  const todayDaylogs = fillDaylogs(getTodayDaylogs(plantData.daylogs || []));
-  const temperature = todayDaylogs.map((d) => (d) ? d.temperature : null);
-  const humidity = todayDaylogs.map((d) => (d) ? d.humidity : null);
-  const moisture = todayDaylogs.map((d) => (d) ? d.moisture : null);
+  useEffect(() => {
+    setTodayDaylogs(fillDaylogs(getTodayDaylogs(plantData.daylogs || [])));
+    setTemperature(todayDaylogs.map((d) => (d) ? d.temperature : null));
+    setHumidity(todayDaylogs.map((d) => (d) ? d.humidity : null));
+    setMoisture(todayDaylogs.map((d) => (d) ? d.moisture : null));
+  }, [plantData.daylogs, todayDaylogs]);
 
   return (
     <CardWrapper plant={plantData}>

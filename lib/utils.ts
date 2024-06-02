@@ -34,12 +34,6 @@ export function getTodayDaylogs(daylogs: DayLog[]): DayLog[] {
   return daylogs.filter((daylog) => daylog.date == today);
 }
 
-// Hàm chuyển đổi string thành số
-function toNumber(value: string): number {
-  return parseInt(value, 10);
-}
-
-
 /**
  * Hàm tạo danh sách hoàn chỉnh gồm 24 thành phần từ danh sách còn thiếu ban đầu
  * Ví dụ 1: [5] =>    [null, null, null, null, null, 5, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null];
@@ -49,7 +43,7 @@ function toNumber(value: string): number {
  */
 export function fillDaylogs(values: DayLog[]): (DayLog | null)[] {
   const filled: (DayLog | null)[] = Array.from({ length: 24 }, () => null);
-  values.forEach((value, index) => {
+  values.forEach((value) => {
     filled[parseInt(value.id, 10)] = value;
   });
   return filled;
