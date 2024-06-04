@@ -1,7 +1,7 @@
-import { Plant } from "@/schemas";
+import { PlantSchema } from "@/schemas";
 import { child, get, getDatabase, ref, set } from "firebase/database";
 import { firebaseApp } from "@/lib/db";
-export let plants: Plant[] = [];
+export let plants: PlantSchema[] = [];
 
 const rtdbUrl =
   "https://smartwater-fe007-default-rtdb.asia-southeast1.firebasedatabase.app";
@@ -20,7 +20,7 @@ export const getPlants = async () =>
 export const getPlantById = async (id: string) =>
   await get(child(dbRef, `plants/${id}`));
 
-export const createPlant = async (plant: Plant) => {
+export const createPlant = async (plant: PlantSchema) => {
   await plants.push(plant);
   return plant;
 };
@@ -35,7 +35,7 @@ export const updatePlantData = async ({
   light,
   water_button_state,
   water_mode,
-}: Plant) => {
+}: PlantSchema) => {
   // Update the plant in the firebase database
   await set(child(dbRef, `plants/${id}`), {
     id,
@@ -76,7 +76,7 @@ export const updateAutomaticSwitchState = async (id: string, state: number) => {
     });
 };
 
-export const updatePlant = async (plant: Plant) => {
+export const updatePlant = async (plant: PlantSchema) => {
   return await plants.splice(
     plants.findIndex((p) => p.id === plant.id),
     1,

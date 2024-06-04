@@ -1,9 +1,9 @@
 import { Switch } from "@/components/ui/switch";
 import { updateAutomaticSwitchState } from "@/lib/plants";
-import { Plant } from "@/schemas";
+import { PlantSchema } from "@/schemas";
 import { useState, useTransition } from "react";
 
-export const AutomaticWateringSwitch = ({plant} : {plant: Plant}) => {
+export const AutomaticWateringSwitch = ({plant} : {plant: PlantSchema}) => {
   const [isPending, startTransition] = useTransition();
   const [waterMode, setWaterMode] = useState(plant.water_mode || 2);
 

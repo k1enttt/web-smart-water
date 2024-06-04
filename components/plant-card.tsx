@@ -2,32 +2,41 @@
 import { useEffect, useState } from "react";
 import { child, off, onValue } from "firebase/database";
 
-import { DayLog, Plant } from "@/schemas";
+import { DayLogSchema, HourLogSchema, PlantSchema } from "@/schemas";
 import CardWrapper from "@/components/card-wrapper";
 import { PercentageCol } from "@/components/percentage-col";
 import { dbRef } from "@/lib/plants";
-import { hours, randomDaylogs } from "@/data/plant";
-import { PlantLineChart } from "./line-chart";
-import { fillDaylogs, getTodayDaylogs } from "@/lib/utils";
+import { hours } from "@/data/plant";
+import { PlantLineChart } from "@/components/line-chart";
+import { fillHourlogs, getTodayDaylogs } from "@/lib/utils";
 
-export const PlantCard = ({ plant }: { plant: Plant }) => {
-  const [plantData, setPlantData] = useState<Plant>(plant);
-  const [todayDaylogs, setTodayDaylogs] = useState<(DayLog|null)[]>([]);
-  const [temperature, setTemperature] = useState<(number | null)[]>([]);
-  const [humidity, setHumidity] = useState<(number | null)[]>([]);
-  const [moisture, setMoisture] = useState<(number | null)[]>([]);
+type LineChartDataType = (number | null)[];
+
+export const PlantCard = ({ plant }: { plant: PlantSchema }) => {
+  const [plantData, setPlantData] = useState<PlantSchema>(plant);
+  const [todayLogsState, setTodayLogsState] = useState<(HourLogSchema|null)[]>([]);
+  const [temperatureState, setTemperatureState] = useState<LineChartDataType>([]);
+  const [humidityState, setHumidityState] = useState<LineChartDataType>([]);
+  const [moistureState, setMoistureState] = useState<LineChartDataType>([]);
+  const [lightState, setLightState] = useState<LineChartDataType>([]);
 
   useEffect(() => {
     const plantsRef = child(dbRef, `plants/${plantData.id}`);
     onValue(plantsRef, (snapshot) => {
-      const data = snapshot.val() as Plant;
+      const data = snapshot.val() as PlantSchema;
       setPlantData(data);
 
       // Get today's daylogs
-      setTodayDaylogs(fillDaylogs(getTodayDaylogs(data.daylogs || [])));
-      setTemperature(todayDaylogs.map((d) => (d) ? d.temperature : null));
-      setHumidity(todayDaylogs.map((d) => (d) ? d.humidity : null));
-      setMoisture(todayDaylogs.map((d) => (d) ? d.moisture : null));
+      const todayLog = getTodayDaylogs(data.daylogs || []);
+      const hourLogs = todayLog?.hourlogs || [];
+      setTodayLogsState(fillHourlogs(hourLogs));
+
+      if (todayLogsState.length > 0) {
+        setTemperatureState(todayLogsState.map((d) => (d) ? d.temperature : null));
+        setHumidityState(todayLogsState.map((d) => (d) ? d.humidity : null));
+        setMoistureState(todayLogsState.map((d) => (d) ? d.moisture : null));
+        setLightState(todayLogsState.map((d) => (d) ? d.light : null));
+      }
     });
     return () => off(plantsRef);
   }, [plantData]);
@@ -45,15 +54,19 @@ export const PlantCard = ({ plant }: { plant: Plant }) => {
         <div className="text-lg font-semibold py-6">Biểu đồ theo giờ</div>
         <div>
           <div>Nhiệt độ không khí</div>
-          <PlantLineChart hours={hours} value={temperature} unit="°C" />
+          <PlantLineChart hours={hours} value={temperatureState} unit="°C" />
         </div>
         <div>
           <div>Độ ẩm không khí</div>
-          <PlantLineChart hours={hours} value={humidity} unit="%" />
+          <PlantLineChart hours={hours} value={humidityState} unit="%" />
         </div>
         <div>
           <div>Độ ẩm đất</div>
-          <PlantLineChart hours={hours} value={moisture} unit="%" />
+          <PlantLineChart hours={hours} value={moistureState} unit="%" />
+        </div>
+        <div>
+          <div>Cường độ ánh sáng</div>
+          <PlantLineChart hours={hours} value={lightState} unit="LX" />
         </div>
       </div>
     </CardWrapper>

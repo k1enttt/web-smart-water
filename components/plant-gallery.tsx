@@ -1,10 +1,10 @@
 'use client';
-import { PlantCard } from "./plant-card";
-import { Plant } from "@/schemas";
+import { PlantCard } from "@/components/plant-card";
+import { PlantSchema } from "@/schemas";
 
 import { useState, useEffect, useTransition } from "react";
 
-export const PlantGallery = ({plantList} : {plantList : Plant[]}) => {
+export const PlantGallery = ({plantList} : {plantList : PlantSchema[]}) => {
     // const [plants, setPlants] = useState(plantList);
 
     // useEffect(() => {

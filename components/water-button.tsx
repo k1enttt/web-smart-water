@@ -4,9 +4,9 @@ import { useTransition } from "react";
 
 import { Button } from "@/components/ui/button";
 import { updatePlantWaterStatus } from "@/lib/plants";
-import { Plant } from "@/schemas";
+import { PlantSchema } from "@/schemas";
 
-export const WaterButton = ({plant} : {plant : Plant}) => {
+export const WaterButton = ({plant} : {plant : PlantSchema}) => {
     const [isPending, startTransition] = useTransition();
     const [isWatered, setIsWatered] = useState(plant.water_button_state || false);
 

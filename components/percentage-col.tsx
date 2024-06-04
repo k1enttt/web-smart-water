@@ -1,10 +1,10 @@
-import { Plant } from "@/schemas";
+import { PlantSchema } from "@/schemas";
 import BasicGauges from "@/components/gauge-chart";
 
 type SensorType = "humidity" | "temperature" | "moisture" | "light";
 interface PercentageColProps {
   type: SensorType;
-  plant: Plant;
+  plant: PlantSchema;
 }
 
 export const PercentageCol = ({ type, plant }: PercentageColProps) => {

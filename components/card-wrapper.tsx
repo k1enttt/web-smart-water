@@ -10,12 +10,12 @@ import {
 import { Header } from "@/components/header";
 import { AutomaticWateringSwitch } from "@/components/automatic-watering-switch";
 import { WaterButton } from "@/components/water-button";
-import { Plant } from "@/schemas";
+import { PlantSchema } from "@/schemas";
 import { HoverWrapper } from "./hover-wrapper";
 
 interface CardWrapperProps {
   children: React.ReactNode;
-  plant: Plant;
+  plant: PlantSchema;
 }
 
 const CardWrapper = ({ children, plant }: CardWrapperProps) => {

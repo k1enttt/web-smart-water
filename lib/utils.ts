@@ -1,4 +1,4 @@
-import { DayLog } from "@/schemas"
+import { DayLogSchema, HourLogSchema } from "@/schemas"
 import { type ClassValue, clsx } from "clsx"
 import { twMerge } from "tailwind-merge"
 
@@ -21,29 +21,46 @@ function padZero(num: number): string {
  * @param date Date
  * @returns string
  */
-export function getDateStringFromDate(date: Date): string {
-  return `${padZero(date.getDate())}/${padZero(date.getMonth() + 1)}/${date.getFullYear()}`;
-}
-/**
- * Hàm lấy dữ liệu từ danh sách các Daylog, chỉ trả về những daylog của ngày hiện tại
- * @param daylogs Daylog[]
- * @returns Daylog[]
- */
-export function getTodayDaylogs(daylogs: DayLog[]): DayLog[] {
-  const today = getDateStringFromDate(new Date());
-  return daylogs.filter((daylog) => daylog.date == today);
+function getDateStringFromDate(date: Date): string {
+  return `${padZero(date.getDate())}${padZero(date.getMonth() + 1)}${date.getFullYear()}`;
 }
 
 /**
- * Hàm tạo danh sách hoàn chỉnh gồm 24 thành phần từ danh sách còn thiếu ban đầu
+ * Hàm chuyển ngày tháng từ chuỗi "ddMMyyyy" thành kiểu Date
+ * Ví dụ: "01062024" => new Date(2024, 5, 1)
+ * @param dateString string
+ * @returns Date
+ */
+function getDateFromDateString(dateString: string): Date {
+  const day = parseInt(dateString.slice(0, 2), 10);
+  const month = parseInt(dateString.slice(2, 4), 10);
+  const year = parseInt(dateString.slice(4, 8), 10);
+  return new Date(year, month - 1, day);
+}
+/**
+ * Hàm lấy dữ liệu từ danh sách các Daylog, chỉ trả về những daylog của ngày hiện tại
+ * Ví dụ: daylog.id = "01062024" => new Date(2024, 5, 1) == new Date() => true
+ * @param daylogs DayLogSchema[]
+ * @returns DayLogSchema | undefined
+ */
+export function getTodayDaylogs(daylogs: DayLogSchema[]): DayLogSchema | undefined {
+  const today = new Date();
+  const todayString = getDateStringFromDate(today);
+  return daylogs.find((daylog) => daylog.id === todayString);
+}
+/**
+ * Hàm tạo danh sách hoàn chỉnh gồm 24 thành phần từ danh sách còn thiếu ban đầu.
  * Ví dụ 1: [5] =>    [null, null, null, null, null, 5, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null];
  * Ví dụ 2: [5, 9] => [null, null, null, null, null, 5, null, null, null, 9, null, null, null, null, null, null, null, null, null, null, null, null, null, null];
- * @param values DayLog[]
- * @returns (DayLog | null)[]
+ * @param values DayLogSchema[]
+ * @returns (DayLogSchema | null)[]
  */
-export function fillDaylogs(values: DayLog[]): (DayLog | null)[] {
-  const filled: (DayLog | null)[] = Array.from({ length: 24 }, () => null);
-  values.forEach((value) => {
+export function fillHourlogs(hourlogs: HourLogSchema[]): (HourLogSchema | null)[] {
+  if (!hourlogs || hourlogs.length === 0) {
+    return [];
+  }
+  const filled: (HourLogSchema | null)[] = Array.from({ length: 24 }, () => null);
+  hourlogs.forEach((value) => {
     filled[parseInt(value.id, 10)] = value;
   });
   return filled;
