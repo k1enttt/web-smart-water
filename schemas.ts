@@ -1,4 +1,4 @@
-export interface Plant {
+export interface PlantSchema {
     id: string;
     name?: string;
     description?: string;
@@ -14,10 +14,17 @@ export interface Plant {
     low_threshold?: number;
     high_threshold?: number;
     // Số liệu cảm biến trong 1 ngày
-    daylogs?: DayLog[];
+    daylogs?: DayLogSchema[];
 }
 
-export interface DayLog {
+export interface DayLogSchema {
+    // id = ddMMyyyy
+    id: string;
+    hourlogs: HourLogSchema[];
+}
+
+export interface HourLogSchema {
+    // id = hh
     id: string;
     date: string;
     temperature: number | null;
