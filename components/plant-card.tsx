@@ -42,6 +42,7 @@ export const PlantCard = ({ plant }: { plant: PlantSchema }) => {
   }, [plantData]);
 
   return (
+<div className="w-full flex gap-x-2 px-6">
     <CardWrapper plant={plantData}>
         <div className="text-xl font-semibold text-center py-6">Trạng thái hiện tại</div>
       <div className="w-full flex items-center justify-around object-contain overflow-x-auto pb-4">
@@ -70,5 +71,17 @@ export const PlantCard = ({ plant }: { plant: PlantSchema }) => {
         </div>
       </div>
     </CardWrapper>
+      <Card className="flex-1 p-4">
+        <CardHeader>
+          <CardTitle>{plantData.name}</CardTitle>
+          <CardDescription>
+            {plant.description}
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+        
+        </CardContent>
+      </Card>
+    </div>
   );
 };
