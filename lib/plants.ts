@@ -55,6 +55,39 @@ export const updatePlantData = async ({
   // TODO: Update the plant
 };
 
+
+export const updateCurrentTemperature = async (plantId: string, data: number) => {
+  await set(child(dbRef, `plants/${plantId}/temperature`), data)
+    .then((response) => response)
+    .catch((error) => {
+      throw new Error(error);
+    });
+}
+
+export const updateCurrentHumidity = async (plantId: string, data: number) => {
+  await set(child(dbRef, `plants/${plantId}/humidity`), data)
+    .then((response) => response)
+    .catch((error) => {
+      throw new Error(error);
+    });
+}
+
+export const updateCurrentLight = async (plantId: string, data: number) => {
+  await set(child(dbRef, `plants/${plantId}/light`), data)
+    .then((response) => response)
+    .catch((error) => {
+      throw new Error(error);
+    });
+}
+
+export const updateCurrentMoisture = async (plantId: string, data: number) => {
+  await set(child(dbRef, `plants/${plantId}/moisture`), data)
+    .then((response) => response)
+    .catch((error) => {
+      throw new Error(error);
+    });
+}
+
 export const updatePlantWaterStatus = async (
   plantId: string,
   status: boolean

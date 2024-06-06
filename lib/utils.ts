@@ -7,6 +7,22 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 /**
+ * Hàm chuyển kiểu Date thành chuỗi "hh:mm:ss dd-MM-yyyy"
+ * Ví dụ: new Date() => "15:37:27 6-6-2024"
+ * @param date Date
+ * @returns string
+ */
+export function getTodayString(): string {
+  const date = new Date();
+  const hours = date.getHours();
+  const minutes = date.getMinutes();
+  const seconds = date.getSeconds();
+  const day = date.getDate();
+  const month = date.getMonth() + 1;
+  const year = date.getFullYear();
+  return `${hours}:${minutes}:${seconds} ${day}-${month}-${year}`;
+}
+/**
  * Hàm chuyển ngày tháng từ chuỗi "ddMMyyyy" thành kiểu Date
  * Ví dụ: "09:00:00 06-06-2024" => new Date(2024, 5, 6); "10:00:00 07-06-2024" => new Date(2024, 5, 7)
  * @param dateString string
