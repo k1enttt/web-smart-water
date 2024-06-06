@@ -1,5 +1,4 @@
-import React, { useEffect, useState } from "react";
-import { child, off, onValue } from "firebase/database";
+import React from "react";
 
 import {
   Card,
@@ -11,7 +10,7 @@ import { Header } from "@/components/header";
 import { AutomaticWateringSwitch } from "@/components/automatic-watering-switch";
 import { WaterButton } from "@/components/water-button";
 import { PlantSchema } from "@/schemas";
-import { HoverWrapper } from "./hover-wrapper";
+import { HoverWrapper } from "@/components/hover-wrapper";
 
 interface CardWrapperProps {
   children: React.ReactNode;
@@ -22,14 +21,9 @@ const CardWrapper = ({ children, plant }: CardWrapperProps) => {
   const defaultName = "New plant";
 
   return (
-    <Card className="w-[90%] min-w-[400px] shadow-md">
+    <Card className="w-[70%] min-w-[400px] shadow-md">
       <CardHeader>
         <Header label={plant.name || defaultName} />
-        {plant.description && (
-          <div className="text-gray-400 font-normal text-center">
-            {plant.description}
-          </div>
-        )}
       </CardHeader>
       <CardContent>{children}</CardContent>
       <CardFooter>

@@ -2,6 +2,7 @@ export interface PlantSchema {
     id: string;
     name?: string;
     description?: string;
+    image?: string;
     // Giá trị cảm biến
     temperature?: number;
     humidity?: number;
@@ -14,19 +15,16 @@ export interface PlantSchema {
     low_threshold?: number;
     high_threshold?: number;
     // Số liệu cảm biến trong 1 ngày
-    daylogs?: DayLogSchema[];
+    daylogs?: DayLogs;
 }
+
+export interface DayLogs {
+    [key: string]: DayLogSchema;
+  }
 
 export interface DayLogSchema {
-    // id = ddMMyyyy
     id: string;
-    hourlogs: HourLogSchema[];
-}
-
-export interface HourLogSchema {
-    // id = hh
-    id: string;
-    date: string;
+    time: string;
     temperature: number | null;
     humidity: number | null;
     moisture: number | null;

@@ -19,3 +19,37 @@ export const randomDaylogs = Array.from({ length: 24 }, () => ({
   humidity: getRandomNumber(20.0, 80.0),
   moisture: getRandomNumber(30.0, 90.0),
 }));
+
+export const payments: Payment[] = [
+  {
+    id: "728ed52f",
+    amount: 100,
+    status: "pending",
+    email: "m@example.com",
+  },
+  {
+    id: "489e1d42",
+    amount: 125,
+    status: "processing",
+    email: "example@gmail.com",
+  },
+]
+
+export const activity_logs: ActivityLog[] = [
+  {
+    id: "256189",
+    plant_id: "0",
+    device_mac: "00:00:00:00:00:00",
+    type: "SUCCESS",
+    message: "Kích hoạt bơm nước",
+    time: "15:54 02-06-2024"
+  },
+  {
+    id: "564852",
+    plant_id: "0",
+    device_mac: "00:00:00:00:00:00",
+    type: "ERROR",
+    message: "Đã tưới nước",
+    time: "15:59 02-06-2024"
+  }
+]
