@@ -1,4 +1,4 @@
-import { DayLogSchema, HourLogSchema } from "@/schemas"
+import { DayLogs, DayLogSchema } from "@/schemas"
 import { type ClassValue, clsx } from "clsx"
 import { twMerge } from "tailwind-merge"
 
@@ -7,46 +7,40 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 /**
- * Hàm chuyển số 1 thành chuỗi "01"
- * @param num number
- * @returns string
- */
-function padZero(num: number): string {
-  return num.toString().padStart(2, "0");
-}
-
-/**
- * Hàm lấy ngày hiện tại dưới dạng chuỗi từ ngày kiểu Date
- * Ví dụ: new Date() => "01/06/2024"
- * @param date Date
- * @returns string
- */
-function getDateStringFromDate(date: Date): string {
-  return `${padZero(date.getDate())}${padZero(date.getMonth() + 1)}${date.getFullYear()}`;
-}
-
-/**
  * Hàm chuyển ngày tháng từ chuỗi "ddMMyyyy" thành kiểu Date
- * Ví dụ: "01062024" => new Date(2024, 5, 1)
+ * Ví dụ: "09:00:00 06-06-2024" => new Date(2024, 5, 6); "10:00:00 07-06-2024" => new Date(2024, 5, 7)
  * @param dateString string
  * @returns Date
  */
-function getDateFromDateString(dateString: string): Date {
-  const day = parseInt(dateString.slice(0, 2), 10);
-  const month = parseInt(dateString.slice(2, 4), 10);
-  const year = parseInt(dateString.slice(4, 8), 10);
-  return new Date(year, month - 1, day);
+function getDateStringFromString(dateString: string): string {
+  const [day, month, year] = dateString.split(" ")[1].split("-").map((value) => parseInt(value, 10));
+  return `${day}/${month}/${year}`;
 }
+
+/**
+ * Hàm lấy giờ từ chuỗi "hh:mm:ss dd-MM-yyyy"
+ * Ví dụ: "09:00:00 06-06-2024" => 9; "10:00:00 07-06-2024" => 10
+ * @param dateString string
+ * @returns number
+ */
+function getHourFromString(dateString: string): number {
+  return parseInt(dateString.split(" ")[0].split(":")[0], 10);
+}
+
 /**
  * Hàm lấy dữ liệu từ danh sách các Daylog, chỉ trả về những daylog của ngày hiện tại
  * Ví dụ: daylog.id = "01062024" => new Date(2024, 5, 1) == new Date() => true
  * @param daylogs DayLogSchema[]
  * @returns DayLogSchema | undefined
  */
-export function getTodayDaylogs(daylogs: DayLogSchema[]): DayLogSchema | undefined {
-  const today = new Date();
-  const todayString = getDateStringFromDate(today);
-  return daylogs.find((daylog) => daylog.id === todayString);
+export function getTodayDaylogs(daylogs: DayLogSchema[]): DayLogSchema[] | undefined {
+  if (!daylogs || Object.entries(daylogs).length === 0) {
+    console.error("Daylogs JSON is empty");
+    return undefined;
+  }
+  const today = new Date().toLocaleDateString();
+  const daylogsArray = Object.entries(daylogs).map((daylog) => daylog[1]);
+  return daylogsArray.filter((daylog) => getDateStringFromString(daylog.time) == today);
 }
 /**
  * Hàm tạo danh sách hoàn chỉnh gồm 24 thành phần từ danh sách còn thiếu ban đầu.
@@ -55,13 +49,35 @@ export function getTodayDaylogs(daylogs: DayLogSchema[]): DayLogSchema | undefin
  * @param values DayLogSchema[]
  * @returns (DayLogSchema | null)[]
  */
-export function fillHourlogs(hourlogs: HourLogSchema[]): (HourLogSchema | null)[] {
-  if (!hourlogs || hourlogs.length === 0) {
+export function fillHourlogs(daylogs: DayLogSchema[]): (DayLogSchema | null)[] {
+  if (!daylogs || daylogs.length === 0) {
+    console.error("Daylogs is empty");
     return [];
   }
-  const filled: (HourLogSchema | null)[] = Array.from({ length: 24 }, () => null);
-  hourlogs.forEach((value) => {
-    filled[parseInt(value.id, 10)] = value;
+  const filled: (DayLogSchema | null)[] = Array.from({ length: 24 }, () => null);
+  daylogs.forEach((value) => {
+    const logHour: number = getHourFromString(value.time);
+    filled[logHour] = value;
   });
   return filled;
 }
+
+/**
+ * Hàm trả về thời gian theo định dạng đầy đủ từ Date()
+ * Ví dụ 1: "15:37:27 6/6/2024" => "Thursday, June 6, 2024 at 3:37 PM"
+ * Ví dụ 2: "15:37:27 7/6/2024" => "Friday, June 7, 2024 at 3:37 PM"
+ * @param dateString string
+ * @returns string
+ */
+export function getFullDateString(dateString: string): string {
+  const date = new Date(dateString);
+  return date.toLocaleString("en-US", {
+    weekday: "long",
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+    hour: "numeric",
+    minute: "numeric",
+  });
+}
+
