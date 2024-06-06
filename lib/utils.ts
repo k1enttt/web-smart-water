@@ -64,20 +64,20 @@ export function fillHourlogs(daylogs: DayLogSchema[]): (DayLogSchema | null)[] {
 
 /**
  * Hàm trả về thời gian theo định dạng đầy đủ từ Date()
- * Ví dụ 1: "15:37:27 6/6/2024" => "Thursday, June 6, 2024 at 3:37 PM"
- * Ví dụ 2: "15:37:27 7/6/2024" => "Friday, June 7, 2024 at 3:37 PM"
+ * Ví dụ 1: "15:37:27 6/6/2024" => "Thứ Năm, 6 Tháng 6, 2024 lúc 3:37 CH"
+ * Ví dụ 2: "15:37:27 7/6/2024" => "Thứ Sáu, 7 Tháng 6, 2024 lúc 3:37 CH"
+ * Ví dụ 3: "15:37:27 8/6/2024" => "Thứ Bảy, 8 Tháng 6, 2024 lúc 3:37 CH"
  * @param dateString string
  * @returns string
  */
 export function getFullDateString(dateString: string): string {
   const date = new Date(dateString);
-  return date.toLocaleString("en-US", {
-    weekday: "long",
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-    hour: "numeric",
-    minute: "numeric",
-  });
+  const days = ["Chủ Nhật", "Thứ Hai", "Thứ Ba", "Thứ Tư", "Thứ Năm", "Thứ Sáu", "Thứ Bảy"];
+  const day = days[date.getDay()];
+  const month = date.toLocaleString("default", { month: "long" });
+  const hours = date.getHours();
+  const minutes = date.getMinutes();
+  const ampm = hours >= 12 ? "CH" : "SA";
+  return `${day}, ${date.getDate()} ${month}, ${date.getFullYear()} lúc ${hours}:${minutes} ${ampm}`;
 }
 
