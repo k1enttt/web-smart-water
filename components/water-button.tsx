@@ -19,7 +19,7 @@ export const WaterButton = ({ plant }: { plant: PlantSchema }) => {
         const now = new Date();
         if (plant.moisture >= plant.high_threshold) {
             toast({
-                title: "Moisture level is too high! 💦",
+                title: "Độ ẩm đất quá cao! 💦",
                 description: getFullDateString(now.toLocaleString()),
                 variant: "destructive",
             });
