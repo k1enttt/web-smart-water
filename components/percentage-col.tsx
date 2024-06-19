@@ -60,7 +60,7 @@ export const PercentageCol = ({ type, plant }: PercentageColProps) => {
       <div className="flex flex-col items-center">
         <span>{sensor.label}</span>
         <span>
-          <BasicGauges value={sensor.value} unit={sensor.unit} valueMax={sensor.valueMax}/>
+          <BasicGauges value={Math.round(sensor.value * 10) / 10} unit={sensor.unit} valueMax={sensor.valueMax}/>
         </span>
       </div>
     </div>
