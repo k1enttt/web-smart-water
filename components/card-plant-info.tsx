@@ -8,12 +8,20 @@ import {
   CardDescription,
   CardTitle,
 } from "@/components/ui/card";
+import { cn } from "@/lib/utils";
 
-const PlantInfoCard = ({ plant }: { plant: PlantSchema }) => {
+const PlantInfoCard = (
+  { 
+    plant, 
+    className
+  }:{ 
+    plant: PlantSchema, 
+    className? :string 
+  }) => {
   const [imageLoaded, setImageLoaded] = useState(false);
 
   return (
-    <Card className="flex-1 p-4 space-y-2">
+    <Card className={cn("p-4 space-y-2", className)}>
       {plant.image && (
         <Image
           src={plant.image}

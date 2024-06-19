@@ -11,17 +11,19 @@ import { AutomaticWateringSwitch } from "@/components/automatic-watering-switch"
 import { WaterButton } from "@/components/water-button";
 import { PlantSchema } from "@/schemas";
 import { HoverWrapper } from "@/components/hover-wrapper";
+import { cn } from "@/lib/utils";
 
 interface CardWrapperProps {
   children: React.ReactNode;
   plant: PlantSchema;
+  className?: string;
 }
 
-const CardWrapper = ({ children, plant }: CardWrapperProps) => {
+const CardWrapper = ({ children, plant, className }: CardWrapperProps) => {
   const defaultName = "New plant";
-
+ className = className || "";
   return (
-    <Card className="w-[70%] min-w-[400px] shadow-md">
+    <Card className={cn("min-w-[400px] shadow-md mx-auto", className)}>
       <CardHeader>
         <Header label={plant.name || defaultName} />
       </CardHeader>

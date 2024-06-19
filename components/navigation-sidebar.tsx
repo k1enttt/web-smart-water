@@ -1,9 +1,11 @@
 
 import { NavigationButton } from "./navigation-button";
+import { cn } from "@/lib/utils";
 
-export const NavigationSidebar = () => {
+export const NavigationSidebar = ({className} : {className?: string}) => {
+  className = className || "";
   return (
-    <div className="min-w-[200px] space-y-10 p-6">
+    <div className={cn("min-w-[200px] space-y-10 p-6", className)}>
       <h1>Smart Water</h1>
       <ul className="h-screen w-full space-y-4">
         <li>
