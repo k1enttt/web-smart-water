@@ -1,11 +1,7 @@
 import { PlantGallery } from "@/components/plant-gallery";
 import { Toaster } from "@/components/ui/toaster";
-import { connectToMqtt, listenOnMqtt } from "@/lib/mqtt";
 import { getPlants} from "@/lib/plants";
 import { PlantSchema } from "@/schemas";
-
-connectToMqtt();
-listenOnMqtt();
 
 export default async function Home() {
   const plantList: PlantSchema[] = await getPlants()

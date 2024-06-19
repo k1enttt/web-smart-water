@@ -38,3 +38,4 @@ next-env.d.ts
 
 # Person note
 todo.txt
+/.vscode

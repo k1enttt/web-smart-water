@@ -24,7 +24,7 @@ const PlantInfoCard = ({ plant }: { plant: PlantSchema }) => {
           className={`object-cover rounded-lg h-[300px] ${
             imageLoaded ? "remove-blur" : "blur"
           }`}
-          onLoad={() => {setImageLoaded(true); console.log("Image loaded")}}
+          onLoad={() => setImageLoaded(true)}
         />
       )}
       <CardTitle>{plant.name}</CardTitle>
