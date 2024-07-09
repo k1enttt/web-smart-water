@@ -100,6 +100,17 @@ export const updatePlantWaterStatus = async (
     });
 };
 
+export const updateManualModeState = async (
+  plantId: string,
+  status: (0 | 1)
+) => {
+  await set(child(dbRef, `plants/${plantId}/manual_mode/server`), status)
+    .then((response) => response)
+    .catch((error) => {
+      throw new Error(error);
+    });
+};
+
 export const updateAutomaticSwitchState = async (id: string, state: number) => {
   // Update the plant in the firebase database
   await set(child(dbRef, `plants/${id}/water_mode`), state)

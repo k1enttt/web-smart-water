@@ -1,6 +1,7 @@
 import { DayLogs, DayLogSchema } from "@/schemas"
 import { type ClassValue, clsx } from "clsx"
 import { twMerge } from "tailwind-merge"
+import { updateManualModeState } from "./plants";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))

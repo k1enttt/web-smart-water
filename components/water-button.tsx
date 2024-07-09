@@ -3,7 +3,7 @@ import { useState } from "react";
 import { useTransition } from "react";
 
 import { Button } from "@/components/ui/button";
-import { updatePlantWaterStatus } from "@/lib/plants";
+import { updateManualModeState, updatePlantWaterStatus } from "@/lib/plants";
 import { PlantSchema } from "@/schemas";
 import { useToast } from "@/components/ui/use-toast";
 import { getFullDateString, waitForEnoughWater } from "@/lib/utils";
@@ -13,54 +13,55 @@ export const WaterButton = ({ plant }: { plant: PlantSchema }) => {
   const [isWatered, setIsWatered] = useState(plant.water_button_state || false);
   const { toast } = useToast();
   const wateringTimeout = 10000;
-  const wateringTimeoutInSeconds = wateringTimeout / 1000; 
+  const wateringTimeoutInSeconds = wateringTimeout / 1000;
 
   const handleWatering = async () => {
     startTransition(async () => {
-    // The moisture is not available
-    if (!plant.moisture) {
-      toast({
-        title: "Không thể đọc dữ liệu cảm biến độ ẩm đất! 🌧️",
-        description: "Vui lòng kiểm tra lại cảm biến độ ẩm đất!",
-        variant: "destructive",
-      });
-      return;
-    }
+      // The moisture is not available
+      if (!plant.moisture) {
+        toast({
+          title: "Không thể đọc dữ liệu cảm biến độ ẩm đất! 🌧️",
+          description: "Vui lòng kiểm tra lại cảm biến độ ẩm đất!",
+          variant: "destructive",
+        });
+        return;
+      }
 
-    // The high threshold is not available
-    if (!plant.high_threshold) {
-      toast({
-        title: "Không thể đọc dữ liệu ngưỡng cao của độ ẩm đất!",
-        description: "Vui lòng kiểm tra lại!",
-        variant: "destructive",
-      });
-      return;
-    }
+      // The high threshold is not available
+      if (!plant.high_threshold) {
+        toast({
+          title: "Không thể đọc dữ liệu ngưỡng cao của độ ẩm đất!",
+          description: "Vui lòng kiểm tra lại!",
+          variant: "destructive",
+        });
+        return;
+      }
 
-    // The manual mode is turned off
-    if (plant.water_mode !== 2) {
-      toast({
-        title: "Chế độ tưới thủ công đang bị tắt! 🚫",
-        description: "Vui lòng bật chế độ tưới thủ công để tiếp tục.",
-        variant: "destructive",
-      });
-      return;
-    }
+      // The manual mode is turned off
+      if (plant.water_mode !== 2) {
+        toast({
+          title: "Chế độ tưới thủ công đang bị tắt! 🚫",
+          description: "Vui lòng bật chế độ tưới thủ công để tiếp tục.",
+          variant: "destructive",
+        });
+        return;
+      }
 
-    // Check if the plant is in auto mode
-    const now = new Date();
-    if (plant.moisture >= plant.high_threshold) {
-      toast({
-        title: "Độ ẩm đất quá cao! 💦",
-        description: getFullDateString(now.toLocaleString()),
-        variant: "destructive",
-      });
-      return;
-    }
+      // Check if the plant is in auto mode
+      const now = new Date();
+      if (plant.moisture >= plant.high_threshold) {
+        toast({
+          title: "Độ ẩm đất quá cao! 💦",
+          description: getFullDateString(now.toLocaleString()),
+          variant: "destructive",
+        });
+        return;
+      }
       async function updateState(value: boolean) {
         // Update database
         setIsWatered(value);
         await updatePlantWaterStatus(plant.id, value);
+        await updateManualModeState(plant.id, (value) ? 1 : 0);
         console.log("Watering plant...");
       }
       updateState(true);
@@ -102,7 +103,9 @@ export const WaterButton = ({ plant }: { plant: PlantSchema }) => {
       onClick={handleWatering}
       className=""
     >
-      {isWatered ? `Đang tưới trong ${wateringTimeoutInSeconds}s...` : "Tưới cây nào!"}
+      {isWatered
+        ? `Đang tưới trong ${wateringTimeoutInSeconds}s...`
+        : "Tưới cây nào!"}
     </Button>
   );
 };
