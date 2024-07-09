@@ -23,7 +23,7 @@ export default function RootLayout({
     return (
         <html lang="en">
             <body className={cn("flex overflow-hidden", font.className)}>
-                <NavigationSidebar />
+                <NavigationSidebar className="sm:block hidden"/>
                 {children}
             </body>
         </html>

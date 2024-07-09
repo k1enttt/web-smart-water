@@ -50,7 +50,7 @@ export const PlantCard = ({ plant }: { plant: PlantSchema }) => {
 
   return (
     <div className="w-full flex gap-x-2 px-6">
-      <CardWrapper plant={plantData}>
+      <CardWrapper plant={plantData} className="flex-1">
         <div className="text-xl font-semibold text-center py-6">Trạng thái hiện tại</div>
         <div className="w-full flex items-center justify-around object-contain overflow-x-auto pb-4">
           <PercentageCol type="humidity" plant={plantData} />
@@ -58,27 +58,27 @@ export const PlantCard = ({ plant }: { plant: PlantSchema }) => {
           <PercentageCol type="temperature" plant={plantData} />
           <PercentageCol type="light" plant={plantData} />
         </div>
-        <div className="flex flex-col items-center justify-center">
+        <div className="flex flex-col items-center justify-center mx-auto 2xl:w-[800px]">
           <div className="text-lg font-semibold py-6">Biểu đồ theo giờ</div>
-          <div>
+          <div className="w-full ">
             <div>Nhiệt độ không khí</div>
-            <PlantLineChart hours={hours} value={temperatureState} unit="°C" />
+            <PlantLineChart hours={hours} value={temperatureState} unit="°C"/>
           </div>
-          <div>
+          <div className="w-full">
             <div>Độ ẩm không khí</div>
             <PlantLineChart hours={hours} value={humidityState} unit="%" />
           </div>
-          <div>
+          <div className="w-full">
             <div>Độ ẩm đất</div>
             <PlantLineChart hours={hours} value={moistureState} unit="%" />
           </div>
-          <div>
+          <div className="w-full">
             <div>Cường độ ánh sáng</div>
             <PlantLineChart hours={hours} value={lightState} unit="LX" />
           </div>
         </div>
       </CardWrapper>
-      <PlantInfoCard plant={plantData} />
+      <PlantInfoCard plant={plantData} className="flex-1 min-w-[300px] max-w-[400px] lg:inline hidden"/>
     </div>
   );
 };

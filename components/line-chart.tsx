@@ -1,9 +1,10 @@
 'use client';
 import { LineChart } from "@mui/x-charts/LineChart";
-export const PlantLineChart = ({hours, value, unit} : {hours: number[], value: (number | null)[], unit: string}) => {
-    var width = 800 ;
+export const PlantLineChart = ({hours, value, unit, className} : {hours: number[], value: (number | null)[], unit: string, className?: string}) => {
+    className = className || "";
     return (
     <LineChart
+          className={className}
           xAxis={[
             { 
               data: hours, 
@@ -19,7 +20,6 @@ export const PlantLineChart = ({hours, value, unit} : {hours: number[], value: (
               valueFormatter: (v) => (v) ? `${v}${unit}` : "N/A",
             },
           ]}
-          width={width}
           height={200}
           grid={{ vertical: true, horizontal: true }}
         />);
