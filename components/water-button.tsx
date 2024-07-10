@@ -45,6 +45,16 @@ export const WaterButton = ({ plant }: { plant: PlantSchema }) => {
         return;
       }
 
+      // The low threshold is not available
+      if (!plant.low_threshold) {
+        toast({
+          title: "Không thể đọc dữ liệu ngưỡng thấp của độ ẩm đất!",
+          description: "Vui lòng kiểm tra lại!",
+          variant: "destructive",
+        });
+        return;
+      }
+
       // The manual mode is turned off
       if (plant.water_mode !== 2) {
         toast({
@@ -78,7 +88,7 @@ export const WaterButton = ({ plant }: { plant: PlantSchema }) => {
       // If the moisture is enough, stop watering immediately
       let moistureState = await waitForEnoughWater({
         moisture: plant.moisture,
-        threshold: plant.high_threshold,
+        threshold: (plant.low_threshold + plant.high_threshold) / 2,
         timeout: wateringTimeout,
       });
 
