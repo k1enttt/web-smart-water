@@ -4,7 +4,7 @@ import { db } from "./plants";
 let logRef: DatabaseReference = child(ref(db), "activity_logs");
 
 export const getActivityLogs = async () => {
-  return get(logRef);
+  return await get(logRef);
 };
 
 export const updateActivityLog = async (data: ActivityLog) => {
@@ -15,5 +15,5 @@ export const updateActivityLog = async (data: ActivityLog) => {
   } = {};
   updates["/" + newLogKey] = data;
   
-  return update(logRef, updates);
+  return await update(logRef, updates);
 }
