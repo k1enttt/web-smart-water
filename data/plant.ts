@@ -32,8 +32,11 @@ export const payments: Payment[] = [
   },
 ]
 
-export const activity_logs: ActivityLog[] = [
-  {
+export const activity_logs: 
+{
+  [key: string]: ActivityLog;
+} = {
+  "123456": {
     id: "256189",
     plant_id: "0",
     device_mac: "00:00:00:00:00:00",
@@ -41,7 +44,7 @@ export const activity_logs: ActivityLog[] = [
     message: "Kích hoạt bơm nước",
     time: "15:54 02-06-2024"
   },
-  {
+  "798456": {
     id: "564852",
     plant_id: "0",
     device_mac: "00:00:00:00:00:00",
@@ -49,4 +52,4 @@ export const activity_logs: ActivityLog[] = [
     message: "Đã tưới nước",
     time: "15:59 02-06-2024"
   }
-]
+}

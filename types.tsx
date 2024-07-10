@@ -12,10 +12,10 @@ type Payment = {
 }
 
 type ActivityLog = {
-  id: string,
-  plant_id: string,
-  device_mac: string,
-  type: "SUCCESS" | "ERROR",
-  message: string,
-  time: string,
+  id?: string,
+  plant_id?: string,
+  device_mac?: string,
+  type?: "SUCCESS" | "ERROR",
+  message?: string,
+  time?: string,
 }

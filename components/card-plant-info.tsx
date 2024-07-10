@@ -37,7 +37,7 @@ const PlantInfoCard = (
       )}
       <CardTitle>{plant.name}</CardTitle>
       <CardDescription>{plant.description}</CardDescription>
-      <CardContent className="space-y-1">
+      <CardContent className="space-y-1 p-0 m-0">
         <div className="flex justify-between items-center">
           <div>ID</div>
           <div>{plant.id}</div>
