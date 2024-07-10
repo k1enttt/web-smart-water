@@ -8,17 +8,17 @@ const rtdbUrl =
 
 export const db = getDatabase(firebaseApp, rtdbUrl);
 
-export const dbRef = ref(db);
+export const dbRef = ref(db, "/plants");
 
 export const getPlants = async () =>
-  await get(child(dbRef, `plants`))
+  await get(dbRef)
     .then((response) => response)
     .catch((error) => {
       throw new Error(error);
     });
 
 export const getPlantById = async (id: string) =>
-  await get(child(dbRef, `plants/${id}`));
+  await get(child(dbRef, `/${id}`));
 
 export const createPlant = async (plant: PlantSchema) => {
   await plants.push(plant);
@@ -37,7 +37,7 @@ export const updatePlantData = async ({
   water_mode,
 }: PlantSchema) => {
   // Update the plant in the firebase database
-  await set(child(dbRef, `plants/${id}`), {
+  await set(child(dbRef, `/${id}`), {
     id,
     name,
     description,
@@ -57,7 +57,7 @@ export const updatePlantData = async ({
 
 
 export const updateCurrentTemperature = async (plantId: string, data: number) => {
-  await set(child(dbRef, `plants/${plantId}/temperature`), data)
+  await set(child(dbRef, `/${plantId}/temperature`), data)
     .then((response) => response)
     .catch((error) => {
       throw new Error(error);
@@ -65,7 +65,7 @@ export const updateCurrentTemperature = async (plantId: string, data: number) =>
 }
 
 export const updateCurrentHumidity = async (plantId: string, data: number) => {
-  await set(child(dbRef, `plants/${plantId}/humidity`), data)
+  await set(child(dbRef, `/${plantId}/humidity`), data)
     .then((response) => response)
     .catch((error) => {
       throw new Error(error);
@@ -73,7 +73,7 @@ export const updateCurrentHumidity = async (plantId: string, data: number) => {
 }
 
 export const updateCurrentLight = async (plantId: string, data: number) => {
-  await set(child(dbRef, `plants/${plantId}/light`), data)
+  await set(child(dbRef, `/${plantId}/light`), data)
     .then((response) => response)
     .catch((error) => {
       throw new Error(error);
@@ -81,7 +81,7 @@ export const updateCurrentLight = async (plantId: string, data: number) => {
 }
 
 export const updateCurrentMoisture = async (plantId: string, data: number) => {
-  await set(child(dbRef, `plants/${plantId}/moisture`), data)
+  await set(child(dbRef, `/${plantId}/moisture`), data)
     .then((response) => response)
     .catch((error) => {
       throw new Error(error);
@@ -93,7 +93,7 @@ export const updatePlantWaterStatus = async (
   status: boolean
 ) => {
   // Update the plant in the firebase database
-  await set(child(dbRef, `plants/${plantId}/water_button_state`), status)
+  await set(child(dbRef, `/${plantId}/water_button_state`), status)
     .then((response) => response)
     .catch((error) => {
       throw new Error(error);
@@ -104,7 +104,7 @@ export const updateManualModeState = async (
   plantId: string,
   status: (0 | 1)
 ) => {
-  await set(child(dbRef, `plants/${plantId}/manual_mode/server`), status)
+  await set(child(dbRef, `/${plantId}/manual_mode/server`), status)
     .then((response) => response)
     .catch((error) => {
       throw new Error(error);
@@ -113,7 +113,7 @@ export const updateManualModeState = async (
 
 export const updateAutomaticSwitchState = async (id: string, state: number) => {
   // Update the plant in the firebase database
-  await set(child(dbRef, `plants/${id}/water_mode`), state)
+  await set(child(dbRef, `/${id}/water_mode`), state)
     .then((response) => response)
     .catch((error) => {
       throw new Error(error);

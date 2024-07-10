@@ -7,16 +7,24 @@ import { updateManualModeState, updatePlantWaterStatus } from "@/lib/plants";
 import { PlantSchema } from "@/schemas";
 import { useToast } from "@/components/ui/use-toast";
 import { getFullDateString, waitForEnoughWater } from "@/lib/utils";
+import { updateActivityLog } from "@/lib/activity-log";
 
 export const WaterButton = ({ plant }: { plant: PlantSchema }) => {
   const [isPending, startTransition] = useTransition();
   const [isWatered, setIsWatered] = useState(plant.water_button_state || false);
   const { toast } = useToast();
   const wateringTimeout = 10000;
-  const wateringTimeoutInSeconds = wateringTimeout / 1000;
 
   const handleWatering = async () => {
     startTransition(async () => {
+      await updateActivityLog({
+        message: "Bấm nút tưới cây",
+        time: new Date().toLocaleString(),
+        type: "SUCCESS",
+        device_mac: plant.device_mac,
+        plant_id: plant.id,
+      });
+
       // The moisture is not available
       if (!plant.moisture) {
         toast({
@@ -94,6 +102,15 @@ export const WaterButton = ({ plant }: { plant: PlantSchema }) => {
 
       updateState(false);
       console.log("Watering done!");
+
+      // Update activity log
+      await updateActivityLog({
+        message: "Tưới cây thành công",
+        time: new Date().toLocaleString(),
+        type: "SUCCESS",
+        device_mac: plant.device_mac,
+        plant_id: plant.id,
+      });
     });
   };
   return (
@@ -104,7 +121,7 @@ export const WaterButton = ({ plant }: { plant: PlantSchema }) => {
       className=""
     >
       {isWatered
-        ? `Đang tưới trong ${wateringTimeoutInSeconds}s...`
+        ? `Đang tưới...`
         : "Tưới cây nào!"}
     </Button>
   );

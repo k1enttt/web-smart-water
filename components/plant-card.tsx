@@ -22,7 +22,7 @@ export const PlantCard = ({ plant }: { plant: PlantSchema }) => {
   const [lightState, setLightState] = useState<LineChartDataType>([]);
 
   useEffect(() => {
-    const plantsRef = child(dbRef, `plants/${plantData.id}`);
+    const plantsRef = child(dbRef, `/${plantData.id}`);
     onValue(plantsRef, (snapshot) => {
       const data = snapshot.val() as PlantSchema;
       if (!data) {

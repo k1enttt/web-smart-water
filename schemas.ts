@@ -3,6 +3,7 @@ export interface PlantSchema {
     name?: string;
     description?: string;
     image?: string;
+    device_mac?: string;
     // Giá trị cảm biến
     temperature?: number;
     humidity?: number;

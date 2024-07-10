@@ -17,7 +17,7 @@ export const PlantLineChart = ({hours, value, unit, className} : {hours: number[
             {
               curve: "linear",
               data: value,
-              valueFormatter: (v) => (v) ? `${v}${unit}` : "N/A",
+              valueFormatter: (v) => (v != null) ? `${v}${unit}` : "N/A",
             },
           ]}
           height={200}
