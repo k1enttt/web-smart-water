@@ -10,14 +10,13 @@ import {
 } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 
-const PlantInfoCard = (
-  { 
-    plant, 
-    className
-  }:{ 
-    plant: PlantSchema, 
-    className? :string 
-  }) => {
+const PlantInfoCard = ({
+  plant,
+  className,
+}: {
+  plant: PlantSchema;
+  className?: string;
+}) => {
   const [imageLoaded, setImageLoaded] = useState(false);
 
   return (
@@ -44,12 +43,30 @@ const PlantInfoCard = (
         </div>
         <div className="flex justify-between items-center">
           <div>Ngưỡng thấp (độ ẩm đất)</div>
-          <div>{plant.low_threshold}</div>
+          <div>{plant.low_threshold}%</div>
         </div>
         <div className="flex justify-between items-center">
           <div>Ngưỡng cao (độ ẩm đất)</div>
-          <div>{plant.high_threshold}</div>
+          <div>{plant.high_threshold}%</div>
         </div>
+        {plant.high_threshold && plant.low_threshold && (
+          <div className="flex justify-between items-center">
+            <div>Ngưỡng chuẩn (độ ẩm đất)</div>
+            <div>{(plant.high_threshold + plant.low_threshold) / 2}%</div>
+          </div>
+        )}
+        {typeof plant.water_velocity == "number" && (
+          <div className="flex justify-between items-center">
+            <div>Tốc độ tưới</div>
+            <div>{plant.water_velocity} ml/s</div>
+          </div>
+        )}
+        {typeof plant.water_usage == "number" && (
+          <div className="flex justify-between items-center">
+            <div>Tổng lượng nước đã tưới</div>
+            <div>{plant.water_usage} ml</div>
+          </div>
+        )}
       </CardContent>
     </Card>
   );

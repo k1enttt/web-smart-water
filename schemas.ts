@@ -12,6 +12,8 @@ export interface PlantSchema {
     // Trạng thái tưới cây
     water_button_state?: boolean;
     water_mode?: number;
+    water_velocity?: number;
+    water_usage?: number;
     // Ngưỡng độ ẩm đất
     low_threshold?: number;
     high_threshold?: number;
