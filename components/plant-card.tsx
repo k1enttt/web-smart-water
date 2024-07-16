@@ -2,12 +2,8 @@
 import { useEffect, useState } from "react";
 import {
   child,
-  DatabaseReference,
   DataSnapshot,
-  off,
-  onChildChanged,
   onValue,
-  ref,
 } from "firebase/database";
 
 import { DayLogSchema, PlantSchema } from "@/schemas";

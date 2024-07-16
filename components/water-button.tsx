@@ -3,7 +3,7 @@ import { useState } from "react";
 import { useTransition } from "react";
 
 import { Button } from "@/components/ui/button";
-import { updatePlantWaterStatus, updateServerManualMode } from "@/lib/plants";
+import { updateServerManualMode } from "@/lib/plants";
 import { PlantSchema } from "@/schemas";
 import { useToast } from "@/components/ui/use-toast";
 import { getFullDateString, waitForEnoughWater } from "@/lib/utils";
@@ -15,18 +15,47 @@ export const WaterButton = ({ plant }: { plant: PlantSchema }) => {
   const { toast } = useToast();
   const wateringTimeout = 10000;
 
+  async function recordActivityLog({
+    message,
+    type,
+    device_mac,
+    plant_id,
+  }: {
+    message: string;
+    type: ("SUCCESS" | "ERROR");
+    device_mac: string | undefined;
+    plant_id: string | undefined;
+  }) {
+    // Update activity log
+    const updateTime = new Date().toLocaleString("en-GB", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+    });
+
+    await updateActivityLog({
+      message: message,
+      time: updateTime,
+      type: type,
+      device_mac: device_mac || "",
+      plant_id: plant_id || "",
+    });
+  }
+
   const handleWatering = async () => {
     startTransition(async () => {
       let result;
-      // Update activity log
-      await updateActivityLog({
+
+      recordActivityLog({
         message: "Bấm nút tưới cây",
-        time: new Date().toLocaleString(),
         type: "SUCCESS",
         device_mac: plant.device_mac,
         plant_id: plant.id,
       });
-
+      
       // The moisture is not available
       if (!plant.moisture) {
         toast({
@@ -132,9 +161,8 @@ export const WaterButton = ({ plant }: { plant: PlantSchema }) => {
       console.log("Watering done!");
 
       // Update activity log
-      await updateActivityLog({
+      await recordActivityLog({
         message: "Tưới cây thành công",
-        time: new Date().toLocaleString(),
         type: "SUCCESS",
         device_mac: plant.device_mac,
         plant_id: plant.id,
