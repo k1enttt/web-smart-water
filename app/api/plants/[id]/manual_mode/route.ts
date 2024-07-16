@@ -25,7 +25,7 @@ export async function POST(req: NextRequest) {
   if (manual_mode && typeof manual_mode !== "number") {
     return NextResponse.json({
       status: 400,
-      body: { error: "Invalid water mode: " },
+      body: { error: "Invalid manual mode: " },
     });
   }
 

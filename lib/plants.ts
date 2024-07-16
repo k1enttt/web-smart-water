@@ -101,9 +101,9 @@ export const updateAutomaticSwitchState = async (
     return 0;
   }
   const response: NextResponse = await fetch(
-    `${baseUrl}/plants/${id}/water_mode`,
+    `${baseUrl}/plants/${id}`,
     {
-      method: "POST",
+      method: "PUT",
       headers: {
         "Content-Type": "application/json",
       },
