@@ -29,12 +29,8 @@ export const POST = async (req: NextRequest) => {
 export async function PUT(req: NextRequest) {
   // Get the plant id from the request
   const id = req.url.split("plants/")[1];
-  console.log(id);
   const payload = await req.json();
-  // const {
-  //   water_button_state,
-  //   water_mode,
-  // } = payload;
+
   /** If the payload have water_button_state variable, add it to an object, do the same thing with water_mode */
   const { water_button_state, water_mode } = payload;
 

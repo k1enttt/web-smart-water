@@ -17,6 +17,7 @@ export const WaterButton = ({ plant }: { plant: PlantSchema }) => {
 
   const handleWatering = async () => {
     startTransition(async () => {
+      // Update activity log
       await updateActivityLog({
         message: "Bấm nút tưới cây",
         time: new Date().toLocaleString(),
@@ -65,7 +66,7 @@ export const WaterButton = ({ plant }: { plant: PlantSchema }) => {
         return;
       }
 
-      // Check if the plant is in auto mode
+      // The soil moisture is too high
       const now = new Date();
       if (plant.moisture >= plant.high_threshold) {
         toast({
@@ -75,6 +76,8 @@ export const WaterButton = ({ plant }: { plant: PlantSchema }) => {
         });
         return;
       }
+
+      // Active the water button
       async function updateState(value: boolean) {
         // Update database
         setIsWatered(value);
@@ -123,6 +126,7 @@ export const WaterButton = ({ plant }: { plant: PlantSchema }) => {
       });
     });
   };
+
   return (
     <Button
       disabled={isPending || plant.water_mode === 1}
