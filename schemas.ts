@@ -1,6 +1,6 @@
 export interface PlantSchema {
-    id: string;
-    name?: string;
+    id?: string;
+    name: string;
     description?: string;
     image?: string;
     device_mac?: string;

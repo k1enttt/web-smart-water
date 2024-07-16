@@ -1,15 +1,15 @@
 "use client";
 import { useEffect, useState } from "react";
-import { child, off, onValue } from "firebase/database";
+import { child, off, onChildChanged, onValue, ref } from "firebase/database";
 
 import { DayLogSchema, PlantSchema } from "@/schemas";
 import CardWrapper from "@/components/card-wrapper";
 import { PercentageCol } from "@/components/percentage-col";
-import { dbRef } from "@/lib/plants";
 import { hours } from "@/data/plant";
 import { PlantLineChart } from "@/components/line-chart";
 import { fillHourlogs, getTodayDaylogs } from "@/lib/utils";
 import PlantInfoCard from "./card-plant-info";
+import { plantsRef } from "@/lib/db";
 
 type LineChartDataType = (number | null)[];
 
@@ -22,8 +22,8 @@ export const PlantCard = ({ plant }: { plant: PlantSchema }) => {
   const [lightState, setLightState] = useState<LineChartDataType>([]);
 
   useEffect(() => {
-    const plantsRef = child(dbRef, `/${plantData.id}`);
-    onValue(plantsRef, (snapshot) => {
+    const plantRef = child(plantsRef, `/${plantData.id}`);
+    onChildChanged(plantRef, (snapshot) => {
       const data = snapshot.val() as PlantSchema;
       if (!data) {
         console.error("Plant data not found");

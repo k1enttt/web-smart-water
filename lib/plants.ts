@@ -1,123 +1,124 @@
 import { PlantSchema } from "@/schemas";
 import { child, get, getDatabase, ref, set } from "firebase/database";
-import { firebaseApp } from "@/lib/db";
+import { env } from "process";
+import { plantsRef } from "./db";
+import { NextResponse } from "next/server";
+import { NextApiResponse } from "next";
 export let plants: PlantSchema[] = [];
 
-const rtdbUrl =
-  "https://smartwater-fe007-default-rtdb.asia-southeast1.firebasedatabase.app";
+const baseUrl = "http://localhost:3000/api";
 
-export const db = getDatabase(firebaseApp, rtdbUrl);
+export const getPlants = async () => {
+  const response: NextResponse = await fetch(`${baseUrl}/plants`).then(
+    (response) => response.json()
+  );
 
-export const dbRef = ref(db, "/plants");
+  if (!response.status || response.status !== 200) {
+    return [];
+  }
 
-export const getPlants = async () =>
-  await get(dbRef)
-    .then((response) => response)
-    .catch((error) => {
-      throw new Error(error);
-    });
+  if (!response.body) {
+    return [];
+  }
 
-export const getPlantById = async (id: string) =>
-  await get(child(dbRef, `/${id}`));
+  const plantList = Object.values(response.body);
 
-export const createPlant = async (plant: PlantSchema) => {
-  await plants.push(plant);
-  return plant;
+  return plantList;
 };
 
-export const updatePlantData = async ({
-  id,
-  name,
-  description,
-  temperature,
-  humidity,
-  moisture,
-  light,
-  water_button_state,
-  water_mode,
-}: PlantSchema) => {
-  // Update the plant in the firebase database
-  await set(child(dbRef, `/${id}`), {
-    id,
-    name,
-    description,
-    temperature,
-    humidity,
-    moisture,
-    light,
-    water_button_state,
-    water_mode,
-  })
-    .then((response) => response)
-    .catch((error) => {
-      throw new Error(error);
-    });
-  // TODO: Update the plant
-};
-
-
-export const updateCurrentTemperature = async (plantId: string, data: number) => {
-  await set(child(dbRef, `/${plantId}/temperature`), data)
-    .then((response) => response)
-    .catch((error) => {
-      throw new Error(error);
-    });
-}
-
-export const updateCurrentHumidity = async (plantId: string, data: number) => {
-  await set(child(dbRef, `/${plantId}/humidity`), data)
-    .then((response) => response)
-    .catch((error) => {
-      throw new Error(error);
-    });
-}
-
-export const updateCurrentLight = async (plantId: string, data: number) => {
-  await set(child(dbRef, `/${plantId}/light`), data)
-    .then((response) => response)
-    .catch((error) => {
-      throw new Error(error);
-    });
-}
-
-export const updateCurrentMoisture = async (plantId: string, data: number) => {
-  await set(child(dbRef, `/${plantId}/moisture`), data)
-    .then((response) => response)
-    .catch((error) => {
-      throw new Error(error);
-    });
-}
-
+/** Send a PUT request to localhost:3000/api/plants/[id] to update the "water_button_state" attribute */
 export const updatePlantWaterStatus = async (
-  plantId: string,
+  plantId: string | undefined,
   status: boolean
 ) => {
-  // Update the plant in the firebase database
-  await set(child(dbRef, `/${plantId}/water_button_state`), status)
-    .then((response) => response)
-    .catch((error) => {
-      throw new Error(error);
-    });
+  if (!plantId) {
+    console.error("Plant ID is required");
+    return 0;
+  }
+  const response: NextResponse = await fetch(`${baseUrl}/plants/${plantId}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ water_button_state: status }),
+  }).then((response) => response.json());
+
+  if (!response || response.status !== 200) {
+    console.error(response);
+    return 0;
+  }
+
+  return 1;
 };
 
 export const updateManualModeState = async (
-  plantId: string,
-  status: (0 | 1)
+  plantId: string | undefined,
+  status: 0 | 1
 ) => {
-  await set(child(dbRef, `/${plantId}/manual_mode/server`), status)
-    .then((response) => response)
-    .catch((error) => {
-      throw new Error(error);
-    });
+  if (!plantId) {
+    console.error("Plant ID is required");
+    return 0;
+  }
+  const response: NextResponse = await fetch(`${baseUrl}/plants/${plantId}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ water_mode: status }),
+  }).then((response) => response.json());
+
+  if (!response || response.status !== 200) {
+    console.error(response);
+    return 0;
+  }
+  return 1;
 };
 
-export const updateAutomaticSwitchState = async (id: string, state: number) => {
+export const updateAutomaticSwitchState = async (
+  id: string | undefined,
+  state: number
+) => {
   // Update the plant in the firebase database
-  await set(child(dbRef, `/${id}/water_mode`), state)
+  if (!id) {
+    console.error("Plant ID is required");
+    return 0;
+  }
+  if (state !== 1 && state !== 2) {
+    console.error("Invalid state: ", state);
+    return 0;
+  }
+  const response: NextResponse = await fetch(
+    `${baseUrl}/plants/${id}/water_mode`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ water_mode: state }),
+    }
+  ).then((response) => response.json());
+
+  if (!response || response.status !== 200) {
+    console.error(response);
+    return 0;
+  }
+  return 1;
+};
+
+export const getPlantById = async (id: string) =>
+  await get(child(plantsRef, `/${id}`));
+
+export const updatePlantData = async (plant: PlantSchema) => {
+  // Update the plant in the firebase database
+  await set(child(plantsRef, `/${plant.id}`), {
+    ...plant,
+  })
     .then((response) => response)
     .catch((error) => {
-      throw new Error(error);
+      console.log(error);
+      return 0;
     });
+  return 1;
 };
 
 export const updatePlant = async (plant: PlantSchema) => {
