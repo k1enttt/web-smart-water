@@ -3,7 +3,7 @@ import { useState } from "react";
 import { useTransition } from "react";
 
 import { Button } from "@/components/ui/button";
-import { updateManualModeState, updatePlantWaterStatus } from "@/lib/plants";
+import { updatePlantWaterStatus, updateServerManualMode } from "@/lib/plants";
 import { PlantSchema } from "@/schemas";
 import { useToast } from "@/components/ui/use-toast";
 import { getFullDateString, waitForEnoughWater } from "@/lib/utils";
@@ -17,6 +17,7 @@ export const WaterButton = ({ plant }: { plant: PlantSchema }) => {
 
   const handleWatering = async () => {
     startTransition(async () => {
+      let result;
       // Update activity log
       await updateActivityLog({
         message: "Bấm nút tưới cây",
@@ -77,15 +78,26 @@ export const WaterButton = ({ plant }: { plant: PlantSchema }) => {
         return;
       }
 
-      // Active the water button
+      // Update the water button
       async function updateState(value: boolean) {
         // Update database
+        const result = await updateServerManualMode(plant.id, value ? 1 : 0);
+
+        if (!result) {
+          console.error("Failed to update the water button state!");
+          return 0;
+        }
         setIsWatered(value);
-        await updatePlantWaterStatus(plant.id, value);
-        await updateManualModeState(plant.id, (value) ? 1 : 0);
         console.log("Watering plant...");
+        return 1;
       }
-      updateState(true);
+
+      // Start watering the plant
+      result = 0;
+      result = await updateState(true);
+      if (!result) {
+        return;
+      }
 
       // Water the plant for 10s by default
       // If the moisture is enough, stop watering immediately
@@ -113,7 +125,10 @@ export const WaterButton = ({ plant }: { plant: PlantSchema }) => {
         });
       }
 
-      updateState(false);
+      // Stop watering the plant
+      result = 0;
+      result = await updateState(false);
+      if (!result) return;
       console.log("Watering done!");
 
       // Update activity log
@@ -134,9 +149,7 @@ export const WaterButton = ({ plant }: { plant: PlantSchema }) => {
       onClick={handleWatering}
       className=""
     >
-      {isWatered
-        ? `Đang tưới...`
-        : "Tưới cây nào!"}
+      {isWatered ? `Đang tưới...` : "Tưới cây nào!"}
     </Button>
   );
 };

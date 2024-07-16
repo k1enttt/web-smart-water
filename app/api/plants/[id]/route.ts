@@ -32,18 +32,13 @@ export async function PUT(req: NextRequest) {
   const payload = await req.json();
 
   /** If the payload have water_button_state variable, add it to an object, do the same thing with water_mode */
-  const { water_button_state, water_mode } = payload;
+  const { water_button_state } = payload;
+  console.log("Button state: " + water_button_state);
 
   if (water_button_state && typeof water_button_state !== "boolean") {
     return NextResponse.json({
       status: 400,
       body: { error: "Invalid water button state" },
-    });
-  }
-  if (water_mode && typeof water_mode !== "number") {
-    return NextResponse.json({
-      status: 400,
-      body: { error: "Invalid water mode" },
     });
   }
 
@@ -52,7 +47,6 @@ export async function PUT(req: NextRequest) {
         child(plantsRef, `/${id}`),
         {
           water_button_state, 
-          water_mode,
         }
       );
   } catch (error) {

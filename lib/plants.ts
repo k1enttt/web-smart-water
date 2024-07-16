@@ -26,51 +26,64 @@ export const getPlants = async () => {
   return plantList;
 };
 
-/** Send a PUT request to localhost:3000/api/plants/[id] to update the "water_button_state" attribute */
-export const updatePlantWaterStatus = async (
+export async function updateServerManualMode(  
   plantId: string | undefined,
-  status: boolean
-) => {
+  value: number
+) {
   if (!plantId) {
     console.error("Plant ID is required");
     return 0;
   }
-  const response: NextResponse = await fetch(`${baseUrl}/plants/${plantId}`, {
+
+  if (value !== 1 && value !== 0) {
+    console.error("Invalid value: ", value);
+    return 0;
+  }
+
+  const response: NextResponse = await fetch(`${baseUrl}/plants/${plantId}/manual_mode`, {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({ water_button_state: status }),
+    body: JSON.stringify({ 
+      server: value
+    }),
   }).then((response) => response.json());
 
+  
   if (!response || response.status !== 200) {
     console.error(response);
     return 0;
   }
 
   return 1;
-};
+}
 
-export const updateManualModeState = async (
+/** Send a PUT request to localhost:3000/api/plants/[id] to update the "water_button_state" attribute */
+export const updatePlantWaterStatus = async (
   plantId: string | undefined,
-  status: 0 | 1
+  water_button_state: boolean,
 ) => {
   if (!plantId) {
     console.error("Plant ID is required");
     return 0;
   }
+  
   const response: NextResponse = await fetch(`${baseUrl}/plants/${plantId}`, {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({ water_mode: status }),
+    body: JSON.stringify({ 
+      water_button_state: water_button_state ,
+    }),
   }).then((response) => response.json());
 
   if (!response || response.status !== 200) {
     console.error(response);
     return 0;
   }
+
   return 1;
 };
 
