@@ -14,6 +14,10 @@ export interface PlantSchema {
     water_mode?: number;
     water_velocity?: number;
     water_usage?: number;
+    manual_mode?: {
+        server: number;
+        device: number;
+    }
     // Ngưỡng độ ẩm đất
     low_threshold?: number;
     high_threshold?: number;

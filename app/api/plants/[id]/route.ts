@@ -33,7 +33,6 @@ export async function PUT(req: NextRequest) {
 
   /** If the payload have water_button_state variable, add it to an object, do the same thing with water_mode */
   const { water_mode } = payload;
-  console.log("Button state: " + water_mode);
 
   if (water_mode && typeof water_mode !== "number") {
     return NextResponse.json({
