@@ -1,11 +1,13 @@
 import { push, update } from "firebase/database";
 import { activityLogsRef } from "./db";
 import { NextResponse } from "next/server";
+import { env } from "process";
 
-const baseUrl = "http://localhost:3000/api";
+const baseUrl = env.BASE_URL || "http://localhost:3000";
+const baseApiUrl = `${baseUrl}/api`;
 
 export const getActivityLogs = async (): Promise<ActivityLog[]> => {
-  const response: NextResponse = await fetch(`${baseUrl}/activity-logs`).then(
+  const response: NextResponse = await fetch(`${baseApiUrl}/activity-logs`).then(
     (response) => response.json()
   );
 

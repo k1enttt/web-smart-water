@@ -1,15 +1,15 @@
 import { PlantSchema } from "@/schemas";
-import { child, get, getDatabase, ref, set } from "firebase/database";
+import { child, get, set } from "firebase/database";
 import { env } from "process";
 import { plantsRef } from "./db";
 import { NextResponse } from "next/server";
-import { NextApiResponse } from "next";
 export let plants: PlantSchema[] = [];
 
-const baseUrl = "http://localhost:3000/api";
+const baseUrl = env.BASE_URL || "http://localhost:3000";
+const baseApiUrl = `${baseUrl}/api`;
 
 export const getPlants = async () => {
-  const response: NextResponse = await fetch(`${baseUrl}/plants`).then(
+  const response: NextResponse = await fetch(`${baseApiUrl}/plants`).then(
     (response) => response.json()
   );
 
@@ -40,7 +40,7 @@ export async function updateServerManualMode(
     return 0;
   }
 
-  const response: NextResponse = await fetch(`${baseUrl}/plants/${plantId}/manual_mode`, {
+  const response: NextResponse = await fetch(`${baseApiUrl}/plants/${plantId}/manual_mode`, {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
@@ -69,7 +69,7 @@ export const updatePlantWaterStatus = async (
     return 0;
   }
   
-  const response: NextResponse = await fetch(`${baseUrl}/plants/${plantId}`, {
+  const response: NextResponse = await fetch(`${baseApiUrl}/plants/${plantId}`, {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
