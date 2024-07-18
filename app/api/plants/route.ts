@@ -1,36 +1,38 @@
-'use server';
-import { createPlant, deletePlant, getPlants } from "@/lib/plants";
+"use server";
+import { plantsRef } from "@/lib/db";
 import { PlantSchema } from "@/schemas";
+import { get, push, update } from "firebase/database";
 import { NextRequest, NextResponse } from "next/server";
 
 export const GET = async (req: NextRequest) => {
-    try {
-        const plants = await getPlants().then((snapshot) => snapshot.val());
-        return NextResponse.json({ status: 200, body: plants });
-    } catch (error) {
-        return NextResponse.json({ status: 500, body: error });
-    }
+  let plants = {};
+  try {
+    plants = await get(plantsRef).then((snapshot) => snapshot.val());
+  } catch (error) {
+    return NextResponse.json({ status: 500, body: error });
+  }
+  if (!plants) return NextResponse.json({ status: 404, body: {} });
+  return NextResponse.json({ status: 200, body: plants });
 };
 
-export const POST = async (req: NextRequest, res: NextResponse) => {
-    const { name, description, temperature, humidity, moisture, light, water_mode, water_button_state, daylogs } =
-        await req.json();
-    try {
-        const plant: PlantSchema = {
-            name,
-            description,
-            id: Date.now().toString(),
-            temperature,
-            humidity,
-            moisture,
-            light,
-            water_mode,
-            water_button_state,
-            daylogs
-        };
-        await createPlant(plant);
-        return NextResponse.json({ status: 200, body: plant });
-    } catch (error) {
-        return NextResponse.json({ status: 500, body: error });
-    }
+export const POST = async (req: NextRequest) => {
+  const request = await req.json();
+  try {
+    const newPlant: PlantSchema = {
+      id: Date.now().toString(),
+      ...request,
+    };
+    const newLogKey = push(plantsRef).key;
+
+    const updates: {
+      [key: string]: PlantSchema;
+    } = {};
+    updates["/" + newLogKey] = newPlant;
+
+    await update(plantsRef, updates);
+
+    return NextResponse.json({ status: 200, body: newPlant });
+  } catch (error) {
+    return NextResponse.json({ status: 500, body: error });
+  }
 };

@@ -1,6 +1,6 @@
 export interface PlantSchema {
-    id: string;
-    name?: string;
+    id?: string;
+    name: string;
     description?: string;
     image?: string;
     device_mac?: string;
@@ -12,6 +12,12 @@ export interface PlantSchema {
     // Trạng thái tưới cây
     water_button_state?: boolean;
     water_mode?: number;
+    water_velocity?: number;
+    water_usage?: number;
+    manual_mode?: {
+        server: number;
+        device: number;
+    }
     // Ngưỡng độ ẩm đất
     low_threshold?: number;
     high_threshold?: number;
