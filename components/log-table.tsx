@@ -1,6 +1,6 @@
 "use client";
 import { DataTable } from "@/components/data-table";
-import { activityLogsRef } from "@/lib/db";
+import { activityLogsRef } from "@/lib/firebase";
 import { DataSnapshot, onValue } from "firebase/database";
 import { useEffect, useState } from "react";
 import { activityLogColumns } from "@/components/columns";
@@ -8,6 +8,8 @@ import { activityLogColumns } from "@/components/columns";
 export const LogTable = ({ data }: { data: ActivityLog[] }) => {
   const [activityLogsList, setActivityLogsList] = useState<ActivityLog[]>(data);
   function handleDataChange(snapshot: DataSnapshot) {
+    // Log the xhr.responseText
+    console.warn(snapshot.val());
     const payload = snapshot.val();
     const activityLogs = Object.keys(payload).map((key) => {
       return {

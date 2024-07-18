@@ -13,7 +13,7 @@ import { hours } from "@/data/plant";
 import { PlantLineChart } from "@/components/line-chart";
 import { fillHourlogs, getTodayDaylogs } from "@/lib/utils";
 import PlantInfoCard from "./card-plant-info";
-import { plantsRef } from "@/lib/db";
+import { plantsRef } from "@/lib/firebase";
 
 type LineChartDataType = (number | null)[];
 

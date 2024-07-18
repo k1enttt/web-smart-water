@@ -1,5 +1,5 @@
 "use server";
-import { activityLogsRef } from "@/lib/db";
+import { activityLogsRef } from "@/lib/firebase";
 import { get } from "firebase/database";
 import { NextRequest, NextResponse } from "next/server";
 

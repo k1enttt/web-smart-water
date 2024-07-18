@@ -1,5 +1,5 @@
 "use server";
-import { plantsRef } from "@/lib/db";
+import { plantsRef } from "@/lib/firebase";
 import { PlantSchema } from "@/schemas";
 import { get, push, update } from "firebase/database";
 import { NextRequest, NextResponse } from "next/server";

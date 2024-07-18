@@ -1,7 +1,7 @@
 import { PlantSchema } from "@/schemas";
 import { child, get, set } from "firebase/database";
 import { env } from "process";
-import { plantsRef } from "./db";
+import { plantsRef } from "./firebase";
 import { NextResponse } from "next/server";
 export let plants: PlantSchema[] = [];
 
@@ -9,7 +9,12 @@ const baseUrl = env.BASE_URL || "http://localhost:3000";
 const baseApiUrl = `${baseUrl}/api`;
 
 export const getPlants = async () => {
-  const response: NextResponse = await fetch(`${baseApiUrl}/plants`).then(
+  const response: NextResponse = await fetch(`${baseApiUrl}/plants`,{
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  }).then(
     (response) => response.json()
   );
 
