@@ -1,10 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import {
-  child,
-  DataSnapshot,
-  onValue,
-} from "firebase/database";
+import { child, DataSnapshot, onValue } from "firebase/database";
 
 import { DayLogSchema, PlantSchema } from "@/schemas";
 import CardWrapper from "@/components/card-wrapper";
@@ -28,10 +24,9 @@ export const PlantCard = ({ plant }: { plant: PlantSchema }) => {
   const [humidityState, setHumidityState] = useState<LineChartDataType>([]);
   const [moistureState, setMoistureState] = useState<LineChartDataType>([]);
   const [lightState, setLightState] = useState<LineChartDataType>([]);
-  const plantRef = child(plantsRef, `/${plantData.id}`);
+  // const plantRef = child(plantsRef, `/${plantData.id}`);
 
   useEffect(() => {
-
     const handle = (snapshot: DataSnapshot) => {
       const data = snapshot.val() as PlantSchema;
       if (!data) {
@@ -53,18 +48,36 @@ export const PlantCard = ({ plant }: { plant: PlantSchema }) => {
         setTemperatureState(
           todayLogsState.map((log) => (log ? log.temperature : null))
         );
-        setHumidityState(todayLogsState.map((log) => (log ? log.humidity : null)));
-        setMoistureState(todayLogsState.map((log) => (log ? log.moisture : null)));
+        setHumidityState(
+          todayLogsState.map((log) => (log ? log.humidity : null))
+        );
+        setMoistureState(
+          todayLogsState.map((log) => (log ? log.moisture : null))
+        );
         setLightState(todayLogsState.map((log) => (log ? log.light : null)));
       }
     };
 
-    const listener = onValue(plantRef, handle);
-    return () => listener();
+    // const database = client.db("smartwater");
+    // const plants = database.collection("plants");
+
+    // try {
+      // const changeStream = plants.watch();
+      // changeStream.on("change", (change) => {
+        // const data = 
+        // console.log(data);
+      // });
+    // } catch (error) {
+    //   console.error(error);
+    // } finally {
+    //   client.close()
+    // }
+
+    return;
   }, [plantData]);
 
   return (
-    <div className="w-full flex gap-x-2 px-6">
+    <div key={plant.id} className="w-full flex gap-x-2 px-6">
       <CardWrapper plant={plantData} className="flex-1">
         <div className="text-xl font-semibold text-center py-6">
           Trạng thái hiện tại
@@ -74,7 +87,7 @@ export const PlantCard = ({ plant }: { plant: PlantSchema }) => {
           <PercentageCol type="moisture" plant={plantData} />
           <PercentageCol type="temperature" plant={plantData} />
           <PercentageCol type="light" plant={plantData} />
-        </div>  
+        </div>
         <div className="flex flex-col items-center justify-center mx-auto 2xl:w-[800px]">
           <div className="text-lg font-semibold py-6">Biểu đồ theo giờ</div>
           <div className="w-full ">

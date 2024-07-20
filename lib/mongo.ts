@@ -1,30 +1,27 @@
-import { MongoClient, ServerApiVersion } from "mongodb";
+import { MongoClient } from "mongodb";
 import { env } from "process";
 
+let client;
+let collection;
+
 const uri = env.MONGO_URI || "mongodb://localhost:27017";
+const dbName = "smartwater";
 
-// Create a MongoClient with a MongoClientOptions object to set the Stable API version
-export const client = new MongoClient(uri, {
-  serverApi: {
-    version: ServerApiVersion.v1,
-    strict: true,
-    deprecationErrors: true,
-  },
-});
-async function run() {
+export async function connectToMongoDB() {
+  client = new MongoClient(uri);
   try {
-    const database = client.db("smartwater");
-    const plants = database.collection("plants");
-
-    // Query for all the plants
-    const query = {};
-    const plantList = await plants.find(query).toArray();
-
-    console.log(plantList);
-  } finally {
-    // Ensures that the client will close when you finish/error
-    await client.close();
-  }
+    await client.connect();
+  } catch (error) {
+    console.error(error);
+  };
+  return client;
 }
 
-// run().catch(console.dir);
+export async function closeMongoDB(client: MongoClient, timeInMs: number = 5000) {
+  return new Promise((resolve) => {
+    setTimeout(async () => {
+      console.log("Closing MongoDB connection");
+      resolve(await client.close());
+    }, timeInMs);
+  });
+}

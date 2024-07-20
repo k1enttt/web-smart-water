@@ -1,15 +1,19 @@
 "use server";
-import { activityLogsRef } from "@/lib/firebase";
-import { get } from "firebase/database";
+import { connectToMongoDB } from "@/lib/mongo";
+import { MongoClient } from "mongodb";
 import { NextRequest, NextResponse } from "next/server";
 
 export const GET = async (req: NextRequest) => {
-  let activityLogs = {} as { [key: string]: ActivityLog };
+  let activityLogList = [];
+
+  const client: MongoClient = await connectToMongoDB();
+  if (!client) return NextResponse.json({ status: 500, body: {} });
+
   try {
-    activityLogs = await get(activityLogsRef).then((snapshot) => snapshot.val());
+    activityLogList = await client.db("smartwater").collection("activity_logs").find({}).limit(20).toArray();
   } catch (error) {
     return NextResponse.json({ status: 500, body: error });
   }
-  if (!activityLogs) return NextResponse.json({ status: 404, body: {} });
-  return NextResponse.json({ status: 200, body: activityLogs });
+  if (!activityLogList) return NextResponse.json({ status: 404, body: {} });
+  return NextResponse.json({ status: 200, body: activityLogList });
 };
