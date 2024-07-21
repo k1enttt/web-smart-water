@@ -1,8 +1,5 @@
 "use server";
-import { plantsRef } from "@/lib/firebase";
 import { connectToMongoDB } from "@/lib/mongo";
-import { PlantSchema } from "@/schemas";
-import { push, update } from "firebase/database";
 import { NextRequest, NextResponse } from "next/server";
 
 export const GET = async (req: NextRequest) => {

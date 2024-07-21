@@ -1,6 +1,5 @@
 import { LogTable } from "@/components/log-table";
 import { getActivityLogs } from "@/lib/activity-log";
-import { Activity } from "lucide-react";
 
 const ActivityLogPage = async () => {
   const activityLogsData = await getActivityLogs();
@@ -12,5 +11,5 @@ const ActivityLogPage = async () => {
     </div>
   </div> );
 }
- 
+
 export default ActivityLogPage;

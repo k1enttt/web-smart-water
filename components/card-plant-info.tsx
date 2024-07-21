@@ -37,18 +37,24 @@ const PlantInfoCard = ({
       <CardTitle>{plant.name}</CardTitle>
       <CardDescription>{plant.description}</CardDescription>
       <CardContent className="space-y-1 p-0 m-0">
-        <div className="flex justify-between items-center">
-          <div>ID</div>
-          <div>{plant.id}</div>
-        </div>
-        <div className="flex justify-between items-center">
-          <div>Ngưỡng thấp (độ ẩm đất)</div>
-          <div>{plant.low_threshold}%</div>
-        </div>
-        <div className="flex justify-between items-center">
-          <div>Ngưỡng cao (độ ẩm đất)</div>
-          <div>{plant.high_threshold}%</div>
-        </div>
+        {plant.id && (
+          <div className="flex justify-between items-center">
+            <div>ID</div>
+            <div>{plant.id}</div>
+          </div>
+        )}
+        {plant.low_threshold && (
+          <div className="flex justify-between items-center">
+            <div>Ngưỡng thấp (độ ẩm đất)</div>
+            <div>{plant.low_threshold}%</div>
+          </div>
+        )}
+        {plant.high_threshold && (
+          <div className="flex justify-between items-center">
+            <div>Ngưỡng cao (độ ẩm đất)</div>
+            <div>{plant.high_threshold}%</div>
+          </div>
+        )}
         {plant.high_threshold && plant.low_threshold && (
           <div className="flex justify-between items-center">
             <div>Ngưỡng chuẩn (độ ẩm đất)</div>
