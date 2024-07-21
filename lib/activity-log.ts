@@ -10,8 +10,8 @@ export const getActivityLogs = async () => {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
-      "Cache-Control": "no-cache"
     },
+    cache: "no-store",
   })
   .then(
     (response) => response.json()
@@ -28,13 +28,13 @@ export const getActivityLogs = async () => {
   return response.body;
 };
 
-// export const updateActivityLog = async (data: ActivityLog) => {
-//   const newLogKey = push(activityLogsRef).key;
+export const updateActivityLog = async (data: ActivityLog) => {
+  const newLogKey = push(activityLogsRef).key;
 
-//   const updates: {
-//     [key: string]: ActivityLog;
-//   } = {};
-//   updates["/" + newLogKey] = data;
+  const updates: {
+    [key: string]: ActivityLog;
+  } = {};
+  updates["/" + newLogKey] = data;
 
-//   return await update(activityLogsRef, updates);
-// };
+  return await update(activityLogsRef, updates);
+};

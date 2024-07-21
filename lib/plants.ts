@@ -14,6 +14,7 @@ export const getPlants = async () => {
     headers: {
       "Content-Type": "application/json",
     },
+    cache: "no-store",
   }).then(
     (response) => response.json()
   );
