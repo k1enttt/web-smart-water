@@ -1,4 +1,4 @@
-import { DayLogs, DayLogSchema } from "@/schemas"
+import { DayLogSchema } from "@/schemas"
 import { type ClassValue, clsx } from "clsx"
 import { twMerge } from "tailwind-merge"
 
@@ -67,7 +67,6 @@ export function getTodayDaylogs(daylogs: DayLogSchema[]): DayLogSchema[] | undef
  */
 export function fillHourlogs(daylogs: DayLogSchema[]): (DayLogSchema | null)[] {
   if (!daylogs || daylogs.length === 0) {
-    console.error("Daylogs is empty");
     return [];
   }
   const filled: (DayLogSchema | null)[] = Array.from({ length: 24 }, () => null);
@@ -97,3 +96,23 @@ export function getFullDateString(dateString: string): string {
   return `${day}, ${date.getDate()} ${month}, ${date.getFullYear()} lúc ${hours}:${minutes} ${ampm}`;
 }
 
+export async function waitForEnoughWater({
+  moisture, 
+  threshold, 
+  checkInterval = 100, 
+  timeout = 10000
+}: {
+  moisture: number, 
+  threshold: number, 
+  checkInterval?: number, 
+  timeout?: number
+}): Promise<0 | 1> {
+  const startTime = Date.now();
+  while (Date.now() - startTime < timeout) {
+    if (moisture >= threshold) {
+      return 1;
+    }
+    await new Promise(resolve => setTimeout(resolve, checkInterval));
+  }
+  return 0;
+}

@@ -8,18 +8,22 @@ export const AutomaticWateringSwitch = ({plant} : {plant: PlantSchema}) => {
   const [isPending, startTransition] = useTransition();
   const [waterMode, setWaterMode] = useState(plant.water_mode || 2);
 
-
   const handleSwitch = async () => {
-    let updatedMode = waterMode;
-    if (waterMode === 1) {
-      updatedMode = 2;
-    } else {
-      updatedMode = 1;
-    }
-    setWaterMode(updatedMode);
-    // Update database
     startTransition(async () => {
-      await updateAutomaticSwitchState(plant.id, updatedMode);
+
+      // Update local state, value 1 is automatic watering mode, value 2 is manual watering mode
+      let updatedMode = waterMode;
+      if (waterMode === 1) {
+        updatedMode = 2;
+      } else {
+        updatedMode = 1;
+      }
+      // Update database
+      const result = await updateAutomaticSwitchState(plant.id, updatedMode);
+
+      if (!result) {return;}
+
+      setWaterMode(updatedMode);
     });
   };
 

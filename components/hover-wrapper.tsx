@@ -5,7 +5,6 @@ import {
   HoverCardContent,
   HoverCardTrigger,
 } from "@/components/ui/hover-card";
-import { child } from "firebase/database";
 
 export const HoverWrapper = ({ children, message = '' }: { children: React.ReactNode, message: string }) => {
   return (
