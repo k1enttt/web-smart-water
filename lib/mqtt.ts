@@ -11,43 +11,18 @@ import { getTodayString } from "@/lib/utils";
 import { DayLogSchema } from "@/schemas";
 import { child, push } from "firebase/database";
 
-const clientId = "emqx_react_21520309";
-const CERT = `-----BEGIN CERTIFICATE-----
-MIIDrzCCApegAwIBAgIQCDvgVpBCRrGhdWrJWZHHSjANBgkqhkiG9w0BAQUFADBh
-MQswCQYDVQQGEwJVUzEVMBMGA1UEChMMRGlnaUNlcnQgSW5jMRkwFwYDVQQLExB3
-d3cuZGlnaWNlcnQuY29tMSAwHgYDVQQDExdEaWdpQ2VydCBHbG9iYWwgUm9vdCBD
-QTAeFw0wNjExMTAwMDAwMDBaFw0zMTExMTAwMDAwMDBaMGExCzAJBgNVBAYTAlVT
-MRUwEwYDVQQKEwxEaWdpQ2VydCBJbmMxGTAXBgNVBAsTEHd3dy5kaWdpY2VydC5j
-b20xIDAeBgNVBAMTF0RpZ2lDZXJ0IEdsb2JhbCBSb290IENBMIIBIjANBgkqhkiG
-9w0BAQEFAAOCAQ8AMIIBCgKCAQEA4jvhEXLeqKTTo1eqUKKPC3eQyaKl7hLOllsB
-CSDMAZOnTjC3U/dDxGkAV53ijSLdhwZAAIEJzs4bg7/fzTtxRuLWZscFs3YnFo97
-nh6Vfe63SKMI2tavegw5BmV/Sl0fvBf4q77uKNd0f3p4mVmFaG5cIzJLv07A6Fpt
-43C/dxC//AH2hdmoRBBYMql1GNXRor5H4idq9Joz+EkIYIvUX7Q6hL+hqkpMfT7P
-T19sdl6gSzeRntwi5m3OFBqOasv+zbMUZBfHWymeMr/y7vrTC0LUq7dBMtoM1O/4
-gdW7jVg/tRvoSSiicNoxBN33shbyTApOB6jtSj1etX+jkMOvJwIDAQABo2MwYTAO
-BgNVHQ8BAf8EBAMCAYYwDwYDVR0TAQH/BAUwAwEB/zAdBgNVHQ4EFgQUA95QNVbR
-TLtm8KPiGxvDl7I90VUwHwYDVR0jBBgwFoAUA95QNVbRTLtm8KPiGxvDl7I90VUw
-DQYJKoZIhvcNAQEFBQADggEBAMucN6pIExIK+t1EnE9SsPTfrgT1eXkIoyQY/Esr
-hMAtudXH/vTBH1jLuG2cenTnmCmrEbXjcKChzUyImZOMkXDiqw8cvpOp/2PV5Adg
-06O/nVsJ8dWO41P0jmP6P6fbtGbfYmbW0W5BjfIttep3Sp+dWOIrWcBAI+0tKIJF
-PnlUkiaY4IBIqDfv8NZ5YBberOgOzW6sRBc4L0na4UU+Krk2U886UAb3LujEV0ls
-YSEY1QSteDwsOoBrp+uvFRTp2InBuThs4pFsiv9kuXclVzDAGySj4dzp30d8tbQk
-CAUw7C29C79Fv1C5qfPrmAESrciIxpg0X40KPMbp1ZWVbd4=
------END CERTIFICATE-----`
+const clientId = "webserver-" + Math.random() * 1000;
 
 const client = mqtt.connect(
-  "mqtts://oe9219e1.ala.eu-central-1.emqxsl.com:8883",
+  "mqtt://192.168.229.12:1883",
   {
     clientId: clientId,
-    username: "thinh",
-    password: "6wbF6MbDLF8fEFT",
-    cert: CERT,
   }
 );
 
 const buttonState = false;
 
-export const connectToMqtt = () => {
+export const connectToMqtt = (planId: string) => {
   client.on("connect", function () {
     console.log("MQTT connected");
     client.subscribe(
@@ -55,6 +30,9 @@ export const connectToMqtt = () => {
       function (err) {
         if (!err) {
           console.log("Subscribed to Status");
+        }
+        if (err) {
+          console.log("Error: ", err);
         }
       }
     );
@@ -64,14 +42,17 @@ export const connectToMqtt = () => {
         if (!err) {
           console.log("Subscribed to Sensor");
         }
+        if (err) {
+          console.log("Error: ", err);
+        }
       }
     );
-    listenOnMqttSensor();
+    listenOnMqttSensor(planId);
     publishButtonState({topic: "water_button_state", payload: buttonState});
   });
 };
 
-export const listenOnMqttSensor = () => {
+export const listenOnMqttSensor = (plantId: string) => {
   let lastHour = new Date().getHours() - 1;
 
   client.on("message", async function (topic, message) {
@@ -79,17 +60,20 @@ export const listenOnMqttSensor = () => {
     const humidity: number = JSON.parse(message.toString()).humidity;
     const light: number = JSON.parse(message.toString()).lux;
     const moisture: number = JSON.parse(message.toString()).soil_moisture;
-    // Cập nhật giá trị hiện tại của cảm biến
-    await updateCurrentTemperature("0", temperature);
-    await updateCurrentHumidity("0", humidity);
-    await updateCurrentLight("0", light);
-    await updateCurrentMoisture("0", moisture);
+
+    // Cập nhật giá trị hiện tại của cảm biến lên Firebase
+    await updateCurrentTemperature(plantId, temperature);
+    await updateCurrentHumidity(plantId, humidity);
+    await updateCurrentLight(plantId, light);
+    await updateCurrentMoisture(plantId, moisture);
 
     // Cập nhật logs cho biểu đồ
     // 1a. Lấy thời gian thực định dạng thành mẫu "hh:mm:ss dd-MM-yyyy"
     const time: string = getTodayString();
+
     // 1b. Lấy giờ hiện tại
     const hour: number = parseInt(time.split(" ")[0].split(":")[0]);
+
     // 2. Gộp thành mẫu DayLogSchema
     if (hour !== lastHour && false) {
       const daylog = {

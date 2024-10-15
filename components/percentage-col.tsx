@@ -1,4 +1,4 @@
-import { PlantSchema } from "@/schemas";
+'use client'
 import BasicGauges from "@/components/gauge-chart";
 
 type SensorType = "humidity" | "temperature" | "moisture" | "light";
@@ -11,16 +11,18 @@ interface SensorSchema {
 }
 interface PercentageColProps {
   type: SensorType;
-  plant: PlantSchema;
+  value: number | undefined;
 }
 
-export const PercentageCol = ({ type, plant }: PercentageColProps) => {
+export const PercentageCol = ({ type, value }: PercentageColProps) => {
+  if (!value) return null;
+
   let sensor: SensorSchema = {} as SensorSchema;
   switch (type) {
     case "humidity":
       sensor = {
         type: "humidity",
-        value: plant.humidity || 0,
+        value: value || 0,
         label: "Độ ẩm không khí",
         unit: "%",
         valueMax: 100,
@@ -29,7 +31,7 @@ export const PercentageCol = ({ type, plant }: PercentageColProps) => {
     case "temperature":
       sensor = {
         type: "temperature",
-        value: plant.temperature || 0,
+        value: value || 0,
         label: "Nhiệt độ không khí",
         unit: "°C",
         valueMax: 50,
@@ -38,7 +40,7 @@ export const PercentageCol = ({ type, plant }: PercentageColProps) => {
     case "moisture":
       sensor = {
         type: "moisture",
-        value: plant.moisture || 0,
+        value: value || 0,
         label: "Độ ẩm đất",
         unit: "%",
         valueMax: 100,
@@ -47,7 +49,7 @@ export const PercentageCol = ({ type, plant }: PercentageColProps) => {
     case "light":
       sensor = {
         type: "light",
-        value: plant.light || 0,
+        value: value || 0,
         label: "Ánh sáng",
         unit: "lux",
         valueMax: 1000,

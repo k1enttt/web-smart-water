@@ -1,6 +1,6 @@
-import { PlantGallery } from "@/components/plant-gallery";
+import PlantCardWrapper from "@/components/plant/plant-card-wrapper";
 import { Toaster } from "@/components/ui/toaster";
-import { getPlants} from "@/lib/plants";
+import { getPlants } from "@/lib/plants";
 import { PlantSchema } from "@/schemas";
 
 export default async function Home() {
@@ -13,7 +13,11 @@ export default async function Home() {
 
   return (
     <main className="h-screen w-full flex flex-col items-center justify-start bg-cyan-500 gap-y-4 py-6 overflow-y-auto">
-      <PlantGallery plantList={plantList} />
+      <div className="w-full flex flex-col items-center justify-center gap-y-4">
+        {plantList.map((plant) => (
+          <PlantCardWrapper key={plant.id} plantId={plant.id} />
+        ))}
+      </div>
       <Toaster />
     </main>
   );

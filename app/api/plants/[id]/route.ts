@@ -4,7 +4,7 @@ import { NextRequest, NextResponse } from "next/server";
 export const GET = async (req: NextRequest) => {
     const id = req.url.split("plants/")[1];
     try {
-        const plant = await getPlantById(id);
+        const plant = await getPlantById(id).catch((error) => null);
         if (!plant) return NextResponse.json({ status: 404, body: {} });
         return NextResponse.json({ status: 200, body: plant });
     } catch (error) {
