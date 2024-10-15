@@ -1,7 +1,6 @@
 "use client";
 import { dbRef } from "@/lib/plants";
 import { fillHourlogs, getTodayDaylogs } from "@/lib/utils";
-import { DayLogSchema } from "@/schemas";
 import { LineChart } from "@mui/x-charts/LineChart";
 import { child, off, onValue } from "firebase/database";
 import { useEffect, useState } from "react";
