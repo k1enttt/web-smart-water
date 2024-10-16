@@ -7,16 +7,16 @@ const baseUrl = env.BASE_URL || "http://localhost:3000";
 const baseApiUrl = `${baseUrl}/api`;
 
 export const getActivityLogs = async (): Promise<ActivityLog[]> => {
-  const response: NextResponse = await fetch(`${baseApiUrl}/activity-logs`).then(
-    (response) => response.json()
-  );
+  const response: NextResponse = await fetch(`${baseApiUrl}/activity_logs`, {
+    method: "GET",
+  }).then((response) => response.json());
 
   if (!response.status || response.status !== 200) {
-    return [];
+    return [] as ActivityLog[];
   }
 
   if (!response.body) {
-    return [];
+    return [] as ActivityLog[];
   }
 
   // Convert the response body to an array of activity logs
