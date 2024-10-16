@@ -8,7 +8,7 @@ export default async function ActivityLogPage() {
     return null;
   });
 
-  if (!activityLogsData) return notFound;
+  if (!activityLogsData) return notFound();
 
   return (
     <Suspense fallback={null}>
