@@ -1,7 +1,9 @@
 "use server";
-import { activityLogsRef } from "@/lib/db";
+import { getActivityLogsRef } from "@/lib/db";
 import { get } from "firebase/database";
 import { NextRequest, NextResponse } from "next/server";
+
+const activityLogsRef = getActivityLogsRef();
 
 export const GET = async (req: NextRequest) => {
   let activityLogs = {} as { [key: string]: ActivityLog };

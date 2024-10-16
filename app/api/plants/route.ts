@@ -1,8 +1,10 @@
 "use server";
-import { plantsRef } from "@/lib/db";
+import { getPlantsRef } from "@/lib/db";
 import { PlantSchema } from "@/schemas";
 import { get, push, update } from "firebase/database";
 import { NextRequest, NextResponse } from "next/server";
+
+const plantsRef = getPlantsRef();
 
 export const GET = async (req: NextRequest) => {
   let plants = {};

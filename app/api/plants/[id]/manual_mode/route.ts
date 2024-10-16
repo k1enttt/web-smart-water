@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { child, get, set, update } from "firebase/database";
-import { plantsRef } from "@/lib/db";
+import { getPlantsRef } from "@/lib/db";
+
+const plantsRef = getPlantsRef();
 
 export async function GET(req: NextRequest) {
   const id = req.url.split("plants/")[1].split("/manual_mode")[0];
