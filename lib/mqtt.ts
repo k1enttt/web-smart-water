@@ -9,7 +9,9 @@ import {
 import { getTodayString } from "@/lib/utils";
 import { DayLogSchema } from "@/schemas";
 import { child, push } from "firebase/database";
-import { dbRef } from "./db";
+import { getPlantsRef } from "./db";
+
+const plantsRef = getPlantsRef();
 
 const clientId = "webserver-" + Math.random() * 1000;
 
@@ -84,7 +86,7 @@ export const listenOnMqttSensor = (plantId: string) => {
         moisture,
       } as DayLogSchema;
       // 3. Thêm vào mảng daylogs
-      await push(child(dbRef, `plants/0/daylogs`), daylog);
+      await push(child(plantsRef, `0/daylogs`), daylog);
       lastHour = hour;
     }
   });

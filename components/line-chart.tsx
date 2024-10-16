@@ -1,9 +1,11 @@
 "use client";
-import { dbRef } from "@/lib/db";
+import { getPlantsRef } from "@/lib/db";
 import { fillHourlogs, getTodayDaylogs } from "@/lib/utils";
 import { LineChart } from "@mui/x-charts/LineChart";
 import { child, off, onValue } from "firebase/database";
 import { useEffect, useState } from "react";
+
+const plantsRef = getPlantsRef();
 
 export const PlantLineChart = ({
   plantId,
@@ -19,8 +21,8 @@ export const PlantLineChart = ({
   const [value, setValue] = useState<(number | null)[]>([]);
 
   useEffect(() => {
-    const plantsRef = child(dbRef, `plants/${plantId}/daylogs`);
-    onValue(plantsRef, (snapshot) => {
+    const logsRef = child(plantsRef, `${plantId}/daylogs`);
+    onValue(logsRef, (snapshot) => {
       const data = snapshot.val() as number;
       if (!data) {
         console.error("Plant data not found");
@@ -55,7 +57,7 @@ export const PlantLineChart = ({
         }
       }
     });
-    return () => off(plantsRef);
+    return () => off(logsRef);
   }, [value, plantId, type]);
 
   if (!plantId) {

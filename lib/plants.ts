@@ -1,50 +1,51 @@
 import { PlantSchema } from "@/schemas";
 import { child, get, set } from "firebase/database";
 import { env } from "process";
-import { dbRef, plantsRef } from "./db";
 import { NextResponse } from "next/server";
+import { getPlantsRef } from "./db";
 export let plants: PlantSchema[] = [];
 
+const plantsRef = getPlantsRef();
 const baseUrl = env.BASE_URL || "http://localhost:3000";
 const baseApiUrl = `${baseUrl}/api`;
 
 export const getPlants = async () =>
-  await get(child(dbRef, `plants`))
+  await get(plantsRef)
     .then((response) => response.val() as PlantSchema[])
     .catch((error) => {
       throw new Error(error);
     });
 
 export const getPlantById = async (id: string) => {
-  const plant = await get(child(dbRef, `plants/${id}`)).then((response) => response.val() as PlantSchema).catch((error) => {
+  const plant = await get(child(plantsRef, `${id}`)).then((response) => response.val() as PlantSchema).catch((error) => {
     throw new Error(error);
   });
   return plant;
 };
 
 export const getHumidity = async (id: string) => {
-  const humidity = await get(child(dbRef, `plants/${id}/humidity`)).then((response) => response.val()).catch((error) => {
+  const humidity = await get(child(plantsRef, `${id}/humidity`)).then((response) => response.val()).catch((error) => {
     throw new Error(error);
   });
   return humidity;
 } 
 
 export const getMoisture = async (id: string) => {
-  const moisture = await get(child(dbRef, `plants/${id}/moisture`)).then((response) => response.val()).catch((error) => {
+  const moisture = await get(child(plantsRef, `${id}/moisture`)).then((response) => response.val()).catch((error) => {
     throw new Error(error);
   });
   return moisture;
 } 
 
 export const getTemperature = async (id: string) => {
-  const temperature = await get(child(dbRef, `plants/${id}/temperature`)).then((response) => response.val()).catch((error) => {
+  const temperature = await get(child(plantsRef, `${id}/temperature`)).then((response) => response.val()).catch((error) => {
     throw new Error(error);
   });
   return temperature;
 } 
 
 export const getLight = async (id: string) => {
-  const light = await get(child(dbRef, `plants/${id}/light`)).then((response) => response.val()).catch((error) => {
+  const light = await get(child(plantsRef, `${id}/light`)).then((response) => response.val()).catch((error) => {
     throw new Error(error);
   });
   return light;
@@ -54,7 +55,7 @@ export const updateCurrentTemperature = async (
   plantId: string,
   data: number
 ) => {
-  await set(child(dbRef, `plants/${plantId}/temperature`), data)
+  await set(child(plantsRef, `${plantId}/temperature`), data)
     .then((response) => response)
     .catch((error) => {
       throw new Error(error);
@@ -62,7 +63,7 @@ export const updateCurrentTemperature = async (
 };
 
 export const updateCurrentHumidity = async (plantId: string, data: number) => {
-  await set(child(dbRef, `plants/${plantId}/humidity`), data)
+  await set(child(plantsRef, `${plantId}/humidity`), data)
     .then((response) => response)
     .catch((error) => {
       throw new Error(error);
@@ -70,7 +71,7 @@ export const updateCurrentHumidity = async (plantId: string, data: number) => {
 };
 
 export const updateCurrentLight = async (plantId: string, data: number) => {
-  await set(child(dbRef, `plants/${plantId}/light`), data)
+  await set(child(plantsRef, `${plantId}/light`), data)
     .then((response) => response)
     .catch((error) => {
       throw new Error(error);
@@ -78,7 +79,7 @@ export const updateCurrentLight = async (plantId: string, data: number) => {
 };
 
 export const updateCurrentMoisture = async (plantId: string, data: number) => {
-  await set(child(dbRef, `plants/${plantId}/moisture`), data)
+  await set(child(plantsRef, `${plantId}/moisture`), data)
     .then((response) => response)
     .catch((error) => {
       throw new Error(error);

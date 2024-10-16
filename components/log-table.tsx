@@ -1,10 +1,11 @@
 "use client";
 import { DataTable } from "@/components/data-table";
-import { activityLogsRef } from "@/lib/db";
 import { DataSnapshot, onValue } from "firebase/database";
 import { useEffect, useState } from "react";
 import { activityLogColumns } from "@/components/columns";
+import { getActivityLogsRef } from "@/lib/db";
 
+const activityLogsRef = getActivityLogsRef();
 export const LogTable = ({ data }: { data: ActivityLog[] }) => {
   const [activityLogsList, setActivityLogsList] = useState<ActivityLog[]>(data);
   function handleDataChange(snapshot: DataSnapshot) {

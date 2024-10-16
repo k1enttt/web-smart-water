@@ -1,8 +1,9 @@
 import { push, update } from "firebase/database";
-import { activityLogsRef } from "./db";
 import { NextResponse } from "next/server";
 import { env } from "process";
+import { getActivityLogsRef } from "./db";
 
+const activityLogsRef = getActivityLogsRef();
 const baseUrl = env.BASE_URL || "http://localhost:3000";
 const baseApiUrl = `${baseUrl}/api`;
 
