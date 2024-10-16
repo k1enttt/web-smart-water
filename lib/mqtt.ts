@@ -1,7 +1,6 @@
 import mqtt from "mqtt";
 
 import {
-  dbRef,
   updateCurrentHumidity,
   updateCurrentLight,
   updateCurrentMoisture,
@@ -10,6 +9,7 @@ import {
 import { getTodayString } from "@/lib/utils";
 import { DayLogSchema } from "@/schemas";
 import { child, push } from "firebase/database";
+import { dbRef } from "./db";
 
 const clientId = "webserver-" + Math.random() * 1000;
 

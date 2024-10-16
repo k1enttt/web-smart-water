@@ -1,5 +1,5 @@
 "use client";
-import { dbRef } from "@/lib/plants";
+import { dbRef } from "@/lib/db";
 import { fillHourlogs, getTodayDaylogs } from "@/lib/utils";
 import { LineChart } from "@mui/x-charts/LineChart";
 import { child, off, onValue } from "firebase/database";
@@ -11,21 +11,12 @@ export const PlantLineChart = ({
   type,
   className,
 }: {
-  plantId: string;
+  plantId: string | undefined;
   hours: number[];
   type: "temperature" | "humidity" | "moisture" | "light";
   className?: string;
 }) => {
-  className = className || "";
   const [value, setValue] = useState<(number | null)[]>([]);
-  const unit =
-    type === "temperature"
-      ? "°C"
-      : type === "humidity"
-      ? "%"
-      : type === "moisture"
-      ? "%"
-      : "LX";
 
   useEffect(() => {
     const plantsRef = child(dbRef, `plants/${plantId}/daylogs`);
@@ -65,7 +56,22 @@ export const PlantLineChart = ({
       }
     });
     return () => off(plantsRef);
-  }, [value]);
+  }, [value, plantId, type]);
+
+  if (!plantId) {
+    console.error("Plant ID not found");
+    return null;
+  }
+
+  className = className || "";
+  const unit =
+    type === "temperature"
+      ? "°C"
+      : type === "humidity"
+      ? "%"
+      : type === "moisture"
+      ? "%"
+      : "LX";
 
   return (
     <LineChart

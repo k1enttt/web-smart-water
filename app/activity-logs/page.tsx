@@ -1,7 +1,7 @@
 import { LogTable } from "@/components/log-table";
 import { getActivityLogs } from "@/lib/activity-log";
 
-const ActivityLogPage = async () => {
+export default async function ActivityLogPage() {
   const activityLogsData = await getActivityLogs();
   
   return ( 
@@ -11,5 +11,3 @@ const ActivityLogPage = async () => {
     </div>
   </div> );
 }
- 
-export default ActivityLogPage;

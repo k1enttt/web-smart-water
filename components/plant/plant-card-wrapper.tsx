@@ -4,8 +4,10 @@ import { PlantCard } from "../plant-card";
 export default async function PlantCardWrapper({
   plantId,
 }: {
-  plantId: string;
+  plantId: string | undefined;
 }) {
+  if (!plantId) return null;
+
   const plant = await getPlantById(plantId);
 
   if (!plant) return null;

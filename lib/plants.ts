@@ -1,7 +1,7 @@
 import { PlantSchema } from "@/schemas";
 import { child, get, set } from "firebase/database";
 import { env } from "process";
-import { plantsRef } from "./db";
+import { dbRef, plantsRef } from "./db";
 import { NextResponse } from "next/server";
 export let plants: PlantSchema[] = [];
 
@@ -10,7 +10,7 @@ const baseApiUrl = `${baseUrl}/api`;
 
 export const getPlants = async () =>
   await get(child(dbRef, `plants`))
-    .then((response) => response)
+    .then((response) => response.val() as PlantSchema[])
     .catch((error) => {
       throw new Error(error);
     });
@@ -49,41 +49,6 @@ export const getLight = async (id: string) => {
   });
   return light;
 } 
-
-export const createPlant = async (plant: PlantSchema) => {
-  await plants.push(plant);
-  return plant;
-};
-
-export const updatePlantData = async ({
-  id,
-  name,
-  description,
-  temperature,
-  humidity,
-  moisture,
-  light,
-  water_button_state,
-  water_mode,
-}: PlantSchema) => {
-  // Update the plant in the firebase database
-  await set(child(dbRef, `plants/${id}`), {
-    id,
-    name,
-    description,
-    temperature,
-    humidity,
-    moisture,
-    light,
-    water_button_state,
-    water_mode,
-  })
-    .then((response) => response)
-    .catch((error) => {
-      throw new Error(error);
-    });
-  // TODO: Update the plant
-};
 
 export const updateCurrentTemperature = async (
   plantId: string,
@@ -177,9 +142,6 @@ export const updateAutomaticSwitchState = async (
   }
   return 1;
 };
-
-export const getPlantById = async (id: string) =>
-  await get(child(plantsRef, `/${id}`));
 
 export const updatePlantData = async (plant: PlantSchema) => {
   // Update the plant in the firebase database

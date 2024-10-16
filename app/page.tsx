@@ -1,7 +1,6 @@
 import PlantCardWrapper from "@/components/plant/plant-card-wrapper";
 import { Toaster } from "@/components/ui/toaster";
 import { getPlants } from "@/lib/plants";
-import { PlantSchema } from "@/schemas";
 
 export default async function Home() {
   const plantList = await getPlants();
