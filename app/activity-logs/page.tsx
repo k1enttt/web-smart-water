@@ -1,9 +1,14 @@
 import { LogTable } from "@/components/log-table";
 import { getActivityLogs } from "@/lib/activity-log";
+import { notFound } from "next/navigation";
 import { Suspense } from "react";
 
 export default async function ActivityLogPage() {
-  const activityLogsData = await getActivityLogs();
+  const activityLogsData = await getActivityLogs().catch((error) => {
+    return null;
+  });
+
+  if (!activityLogsData) return notFound;
 
   return (
     <Suspense fallback={null}>

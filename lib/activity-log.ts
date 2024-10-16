@@ -9,7 +9,12 @@ const baseApiUrl = `${baseUrl}/api`;
 export const getActivityLogs = async (): Promise<ActivityLog[]> => {
   const response: NextResponse = await fetch(`${baseApiUrl}/activity_logs`, {
     method: "GET",
-  }).then((response) => response.json());
+    headers: {
+      "Content-Type": "application/json",
+    },
+  }).then((response) => response.json()).catch((error) => {
+    throw error
+  });
 
   if (!response.status || response.status !== 200) {
     return [] as ActivityLog[];

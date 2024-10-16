@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useTransition } from "react";
 
 import { Button } from "@/components/ui/button";
@@ -63,7 +63,7 @@ export const WaterButton = ({ plant }: { plant: PlantSchema }) => {
   }
 
   // Exercute the watering process
-  async function water({
+  const water = useCallback(async function({
     moisture,
     threshold,
     timeout,
@@ -112,7 +112,7 @@ export const WaterButton = ({ plant }: { plant: PlantSchema }) => {
       device_mac: plant.device_mac,
       plant_id: plant.id,
     });
-  }
+  }, []);
 
   // Handle the water button click event
   const handleClick = async () => {
@@ -189,7 +189,7 @@ export const WaterButton = ({ plant }: { plant: PlantSchema }) => {
   };
 
   // Handle event that the watering state is changed by the IoT device
-  const handleWaterStateChangeByDevice = () => {
+  const handleWaterStateChangeByDevice = useCallback(() => {
     if (!plant.high_threshold || !plant.low_threshold) {
       console.error("The high threshold or low threshold is not available!");
       return;
@@ -204,14 +204,14 @@ export const WaterButton = ({ plant }: { plant: PlantSchema }) => {
       threshold: (plant.high_threshold + plant.low_threshold) / 2,
       timeout: wateringTimeout,
     });
-  };
+  }, [plant.high_threshold, plant.low_threshold, plant.moisture, water]);
 
   // Process the watering event
   useEffect(() => {
     if (plant.manual_mode?.server === 1) {
         handleWaterStateChangeByDevice();
     }
-  }, [plant.manual_mode?.server]);
+  }, [plant.manual_mode?.server, handleWaterStateChangeByDevice]);
 
   return (
     <Button
