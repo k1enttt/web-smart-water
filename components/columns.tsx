@@ -36,15 +36,15 @@ export const activityLogColumns: ColumnDef<ActivityLog>[] = [
   },
   {
     accessorKey: "plant_id",
-    header: "Plant ID",
+    header: "ID cây",
   },
   {
     accessorKey: "device_mac",
-    header: "Device MAC",
+    header: "Địa chỉ MAC",
   },
   {
     accessorKey: "type",
-    header: "Type of log",
+    header: "Trạng thái",
     cell: ({row}) => {
       return <Badge variant={row.getValue("type") == "SUCCESS" ? "default" : "destructive"}>
         {row.getValue("type")}
@@ -53,7 +53,7 @@ export const activityLogColumns: ColumnDef<ActivityLog>[] = [
   },
   {
     accessorKey: "message",
-    header: "Message",
+    header: "Nội dung",
   },
   {
     accessorKey: "time",
@@ -63,7 +63,7 @@ export const activityLogColumns: ColumnDef<ActivityLog>[] = [
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          Time
+          Thời gian
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       )

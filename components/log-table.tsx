@@ -22,5 +22,5 @@ export const LogTable = ({ data }: { data: ActivityLog[] }) => {
     const listener = onValue(activityLogsRef, handleDataChange);
     return () => listener();
   }, [activityLogsList]);
-  return <DataTable columns={activityLogColumns} data={activityLogsList} />;
+  return <DataTable columns={activityLogColumns} data={data} />;
 };

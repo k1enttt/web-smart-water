@@ -1,4 +1,4 @@
-import { PlantSchema } from "@/schemas";
+"use client";
 import BasicGauges from "@/components/gauge-chart";
 
 type SensorType = "humidity" | "temperature" | "moisture" | "light";
@@ -11,45 +11,45 @@ interface SensorSchema {
 }
 interface PercentageColProps {
   type: SensorType;
-  plant: PlantSchema;
+  value: number | undefined;
 }
 
-export const PercentageCol = ({ type, plant }: PercentageColProps) => {
+export const PercentageCol = ({ type, value }: PercentageColProps) => {
   let sensor: SensorSchema = {} as SensorSchema;
   switch (type) {
     case "humidity":
       sensor = {
         type: "humidity",
-        value: plant.humidity || 0,
+        value: value || NaN,
         label: "Độ ẩm không khí",
-        unit: "%",
+        unit: value ? "%" : " ",
         valueMax: 100,
       };
       break;
     case "temperature":
       sensor = {
         type: "temperature",
-        value: plant.temperature || 0,
+        value: value || NaN,
         label: "Nhiệt độ không khí",
-        unit: "°C",
+        unit: value ? "°C" : "",
         valueMax: 50,
       };
       break;
     case "moisture":
       sensor = {
         type: "moisture",
-        value: plant.moisture || 0,
+        value: value || NaN,
         label: "Độ ẩm đất",
-        unit: "%",
+        unit: value ? "%": "",
         valueMax: 100,
       };
       break;
     case "light":
       sensor = {
         type: "light",
-        value: plant.light || 0,
+        value: value || NaN,
         label: "Ánh sáng",
-        unit: "lux",
+        unit: value ? "lux" : "",
         valueMax: 1000,
       };
       break;
@@ -60,7 +60,11 @@ export const PercentageCol = ({ type, plant }: PercentageColProps) => {
       <div className="flex flex-col items-center">
         <span>{sensor.label}</span>
         <span>
-          <BasicGauges value={Math.round(sensor.value * 10) / 10} unit={sensor.unit} valueMax={sensor.valueMax}/>
+          <BasicGauges
+            value={Math.round(sensor.value * 10) / 10}
+            unit={sensor.unit}
+            valueMax={sensor.valueMax}
+          />
         </span>
       </div>
     </div>
