@@ -27,7 +27,7 @@ const firebaseApp = initializeApp(firebaseConfig);
 
 const db = getDatabase(firebaseApp);
 
-const dbRef = ref(db);
+export const dbRef = ref(db);
 
 export const plantsRef = child(dbRef, "plants");
 export const activityLogsRef = child(dbRef, "activity_logs");

@@ -1,3 +1,4 @@
+'use client'
 import { Switch } from "@/components/ui/switch";
 import { updateAutomaticSwitchState } from "@/lib/plants";
 import { PlantSchema } from "@/schemas";

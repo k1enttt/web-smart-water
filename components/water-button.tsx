@@ -1,13 +1,13 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useTransition } from "react";
 
 import { Button } from "@/components/ui/button";
-import { updateServerManualMode } from "@/lib/plants";
 import { PlantSchema } from "@/schemas";
 import { useToast } from "@/components/ui/use-toast";
 import { getFullDateString, waitForEnoughWater } from "@/lib/utils";
 import { updateActivityLog } from "@/lib/activity-log";
+import { updatePlantWaterStatus } from "@/lib/plants";
 
 export const WaterButton = ({ plant }: { plant: PlantSchema }) => {
   const [isPending, startTransition] = useTransition();
@@ -18,7 +18,7 @@ export const WaterButton = ({ plant }: { plant: PlantSchema }) => {
   // Update the water button state to Firebase
   async function updateState(value: boolean) {
     // Update database
-    const result = await updateServerManualMode(plant.id, value ? 1 : 0);
+    const result = await updatePlantWaterStatus(plant.id, value);
 
     if (!result) {
       console.error("Failed to update the water button state!");
@@ -26,6 +26,9 @@ export const WaterButton = ({ plant }: { plant: PlantSchema }) => {
     }
     setIsWatered(value);
     console.log("Watering plant...");
+
+
+
     return 1;
   }
 
@@ -60,7 +63,7 @@ export const WaterButton = ({ plant }: { plant: PlantSchema }) => {
   }
 
   // Exercute the watering process
-  async function water({
+  const water = useCallback(async function({
     moisture,
     threshold,
     timeout,
@@ -109,12 +112,52 @@ export const WaterButton = ({ plant }: { plant: PlantSchema }) => {
       device_mac: plant.device_mac,
       plant_id: plant.id,
     });
-  }
+  }, []);
 
   // Handle the water button click event
   const handleClick = async () => {
     startTransition(async () => {
-      let result;
+    // The moisture is not available
+    if (!plant.moisture) {
+      toast({
+        title: "Không thể đọc dữ liệu cảm biến độ ẩm đất! 🌧️",
+        description: "Vui lòng kiểm tra lại cảm biến độ ẩm đất!",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // The high threshold is not available
+    if (!plant.high_threshold) {
+      toast({
+        title: "Không thể đọc dữ liệu ngưỡng cao của độ ẩm đất!",
+        description: "Vui lòng kiểm tra lại!",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // The low threshold is not available
+    if (!plant.low_threshold) {
+      toast({
+        title: "Không thể đọc dữ liệu ngưỡng thấp của độ ẩm đất!",
+        description: "Vui lòng kiểm tra lại!",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // The manual mode is turned off
+    if (plant.water_mode !== 2) {
+      toast({
+        title: "Chế độ tưới thủ công đang bị tắt! 🚫",
+        description: "Vui lòng bật chế độ tưới thủ công để tiếp tục.",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+      let updateResult = 0;
 
       recordActivityLog({
         message: "Bấm nút tưới cây",
@@ -123,45 +166,7 @@ export const WaterButton = ({ plant }: { plant: PlantSchema }) => {
         plant_id: plant.id,
       });
 
-      // The moisture is not available
-      if (!plant.moisture) {
-        toast({
-          title: "Không thể đọc dữ liệu cảm biến độ ẩm đất! 🌧️",
-          description: "Vui lòng kiểm tra lại cảm biến độ ẩm đất!",
-          variant: "destructive",
-        });
-        return;
-      }
-
-      // The high threshold is not available
-      if (!plant.high_threshold) {
-        toast({
-          title: "Không thể đọc dữ liệu ngưỡng cao của độ ẩm đất!",
-          description: "Vui lòng kiểm tra lại!",
-          variant: "destructive",
-        });
-        return;
-      }
-
-      // The low threshold is not available
-      if (!plant.low_threshold) {
-        toast({
-          title: "Không thể đọc dữ liệu ngưỡng thấp của độ ẩm đất!",
-          description: "Vui lòng kiểm tra lại!",
-          variant: "destructive",
-        });
-        return;
-      }
-
-      // The manual mode is turned off
-      if (plant.water_mode !== 2) {
-        toast({
-          title: "Chế độ tưới thủ công đang bị tắt! 🚫",
-          description: "Vui lòng bật chế độ tưới thủ công để tiếp tục.",
-          variant: "destructive",
-        });
-        return;
-      }
+      
 
       // The soil moisture is too high
       const now = new Date();
@@ -175,28 +180,38 @@ export const WaterButton = ({ plant }: { plant: PlantSchema }) => {
       }
 
       // Start watering the plant
-      result = 0;
-      result = await updateState(true);
-      if (!result) {
+      updateResult = 0;
+      updateResult = await updateState(true);
+      if (!updateResult) {
         return;
       }
     });
   };
 
+  // Handle event that the watering state is changed by the IoT device
+  const handleWaterStateChangeByDevice = useCallback(() => {
+    if (!plant.high_threshold || !plant.low_threshold) {
+      console.error("The high threshold or low threshold is not available!");
+      return;
+    }
+    if (!plant.moisture) {
+      console.error("The moisture is not available!");
+      return;
+    }
+    setIsWatered(true);
+    water({
+      moisture: plant.moisture || 0,
+      threshold: (plant.high_threshold + plant.low_threshold) / 2,
+      timeout: wateringTimeout,
+    });
+  }, [plant.high_threshold, plant.low_threshold, plant.moisture, water]);
+
   // Process the watering event
   useEffect(() => {
-    const waterState = plant.manual_mode?.server;
-    if (waterState === 1) {
-      if (plant.moisture && plant.low_threshold && plant.high_threshold) {
-        setIsWatered(true);
-        water({
-          moisture: plant.moisture || 0,
-          threshold: (plant.high_threshold + plant.low_threshold) / 2,
-          timeout: wateringTimeout,
-        });
-      }
+    if (plant.manual_mode?.server === 1) {
+        handleWaterStateChangeByDevice();
     }
-  }, [plant.manual_mode?.server]);
+  }, [plant.manual_mode?.server, handleWaterStateChangeByDevice]);
 
   return (
     <Button
