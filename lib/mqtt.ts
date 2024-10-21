@@ -1,4 +1,4 @@
-import mqtt from "mqtt";
+import mqtt, { IClientOptions } from "mqtt";
 
 import {
   updateCurrentHumidity,
@@ -11,97 +11,81 @@ import { DayLogSchema } from "@/schemas";
 import { child, push } from "firebase/database";
 import { getPlantsRef } from "./db";
 
+let mqttClient: mqtt.MqttClient;
 const plantsRef = getPlantsRef();
 
-const clientId = "webserver-" + Math.random() * 1000;
-
-const client = mqtt.connect(
-  "mqtt://192.168.229.12:1883",
-  {
-    clientId: clientId,
-  }
-);
-
 const buttonState = false;
+let temperature;
+let humidity;
+let light;
+let moisture;
 
 export const connectToMqtt = (planId: string) => {
-  client.on("connect", function () {
-    console.log("MQTT connected");
-    client.subscribe(
-      "client/esp32-client-24:D7:EB:18:3D:D8/status",
-      function (err) {
-        if (!err) {
-          console.log("Subscribed to Status");
-        }
-        if (err) {
-          console.log("Error: ", err);
-        }
-      }
-    );
-    client.subscribe(
-      "client/esp32-client-24:D7:EB:18:3D:D8/sensor",
-      function (err) {
-        if (!err) {
-          console.log("Subscribed to Sensor");
-        }
-        if (err) {
-          console.log("Error: ", err);
-        }
-      }
-    );
-    listenOnMqttSensor(planId);
-    publishButtonState({topic: "water_button_state", payload: buttonState});
+  const clientId = `webserver_${Math.random().toString(36).substring(7)}`;
+  const options = {
+    clientId,
+    username: "kienttt",
+    password: "kienttt",
+    reconnectPeriod: 5000,
+    clean: true,
+  } as IClientOptions;
+
+  mqttClient = mqtt.connect(
+    "tls://a12b4b611c244a27b486495fb4c1e28f.s1.eu.hivemq.cloud:8883",
+    options
+  );
+
+  mqttClient.on("error", (err) => {
+    console.error("Error connecting to MQTT broker:", err);
   });
-};
 
-export const listenOnMqttSensor = (plantId: string) => {
-  let lastHour = new Date().getHours() - 1;
+  mqttClient.on("reconnect", () => {
+    console.log("Reconnecting to MQTT broker");
+  });
 
-  client.on("message", async function (topic, message) {
-    const temperature: number = JSON.parse(message.toString()).temperature;
-    const humidity: number = JSON.parse(message.toString()).humidity;
-    const light: number = JSON.parse(message.toString()).lux;
-    const moisture: number = JSON.parse(message.toString()).soil_moisture;
+  mqttClient.on("connect", function () {
+    console.log("Client connected:" + clientId);
+  });
 
-    // Cập nhật giá trị hiện tại của cảm biến lên Firebase
-    await updateCurrentTemperature(plantId, temperature);
-    await updateCurrentHumidity(plantId, humidity);
-    await updateCurrentLight(plantId, light);
-    await updateCurrentMoisture(plantId, moisture);
-
-    // Cập nhật logs cho biểu đồ
-    // 1a. Lấy thời gian thực định dạng thành mẫu "hh:mm:ss dd-MM-yyyy"
-    const time: string = getTodayString();
-
-    // 1b. Lấy giờ hiện tại
-    const hour: number = parseInt(time.split(" ")[0].split(":")[0]);
-
-    // 2. Gộp thành mẫu DayLogSchema
-    if (hour !== lastHour && false) {
-      const daylog = {
-        time,
-        temperature,
-        humidity,
-        light,
-        moisture,
-      } as DayLogSchema;
-      // 3. Thêm vào mảng daylogs
-      await push(child(plantsRef, `0/daylogs`), daylog);
-      lastHour = hour;
+  mqttClient.on("message", function (topic, message) {
+    if (topic === "temperature") {
+      temperature = message.toString();
+      console.log("Temperature: ", temperature);
+    }
+    if (topic === "humidity") {
+      humidity = message.toString();
+      console.log("Humidity: ", humidity);
+    }
+    if (topic === "light") {
+      light = message.toString();
+      console.log("Light: ", light);
+    }
+    if (topic === "moisture") {
+      moisture = message.toString();
+      console.log("Moisture: ", moisture);
+    }
+    if (topic === "water") {
+      const water = message.toString();
+      console.log("Water: ", water);
     }
   });
 };
 
-export const publishButtonState = ({topic, payload} : {topic: string, payload: boolean}) => {
-  const payloadString = payload ? "1" : "0";
-    if (client) {
-      client.publish(topic, payloadString, (error) => {
-        if (error) {
-          console.error("Publish error: ", error);
-        }
-        else console.log("Published to ", topic, payloadString);
-      });
-    } else {
-      console.error("Client not connected");
+function subscribeToTopic(topic: string) {
+  console.log(`Subscribing to Topic: ${topic}`);
+  mqttClient.subscribe(topic, { qos: 0 }, (err) => {
+    if (err) {
+      console.error("Error subscribing to topic:", err);
     }
+  });
+}
+
+function unsubscribeToTopic(topic: string) {
+  console.log(`Unsubscribing to Topic: ${topic}`);
+
+  mqttClient.unsubscribe(topic, (err) => {
+    if (err) {
+      console.error("Error unsubscribing to topic:", err);
+    }
+  });
 }
