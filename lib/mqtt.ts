@@ -1,5 +1,4 @@
 import mqtt, { IClientOptions } from "mqtt";
-
 import {
   updateCurrentHumidity,
   updateCurrentLight,
@@ -22,18 +21,24 @@ let moisture;
 
 export const connectToMqtt = (planId: string) => {
   const clientId = `webserver_${Math.random().toString(36).substring(7)}`;
-  const options = {
+
+  const hiveHost =
+    "tls://a12b4b611c244a27b486495fb4c1e28f.s1.eu.hivemq.cloud:8883";
+  const hiveOptions = {
     clientId,
     username: "kienttt",
     password: "kienttt",
     reconnectPeriod: 5000,
     clean: true,
   } as IClientOptions;
+  const nt531Host = "mqtt://192.168.50.12:1883";
+  const nt531Options = {
+    clientId,
+    reconnectPeriod: 5000,
+    clean: true,
+  };
 
-  mqttClient = mqtt.connect(
-    "tls://a12b4b611c244a27b486495fb4c1e28f.s1.eu.hivemq.cloud:8883",
-    options
-  );
+  mqttClient = mqtt.connect(nt531Host, nt531Options);
 
   mqttClient.on("error", (err) => {
     console.error("Error connecting to MQTT broker:", err);
@@ -44,34 +49,37 @@ export const connectToMqtt = (planId: string) => {
   });
 
   mqttClient.on("connect", function () {
-    console.log("Client connected:" + clientId);
+    console.log("Client connected: " + clientId);
   });
 
   mqttClient.on("message", function (topic, message) {
-    if (topic === "temperature") {
+    if (topic === "sensor/DHT11/temperature") {
       temperature = message.toString();
+      updateCurrentTemperature("0", Number(temperature));
       console.log("Temperature: ", temperature);
-    }
-    if (topic === "humidity") {
+    } else if (topic === "sensor/DHT11/humidity") {
       humidity = message.toString();
+      updateCurrentHumidity("0", Number(humidity));
       console.log("Humidity: ", humidity);
-    }
-    if (topic === "light") {
+    } else if (topic === "sensor/BH1750/lux") {
       light = message.toString();
+      updateCurrentLight("0", Number(light));
       console.log("Light: ", light);
-    }
-    if (topic === "moisture") {
+    } else if (topic === "sensor/soil_sensor/soilMoisture") {
       moisture = message.toString();
+      updateCurrentMoisture("0", Number(moisture));
       console.log("Moisture: ", moisture);
-    }
-    if (topic === "water") {
+    } else if (topic === "water") {
       const water = message.toString();
       console.log("Water: ", water);
+    } else {
+      console.log("Unknown topic: ", topic);
+      console.log("Message: ", message.toString());
     }
   });
 };
 
-function subscribeToTopic(topic: string) {
+export function subscribeToTopic(topic: string) {
   console.log(`Subscribing to Topic: ${topic}`);
   mqttClient.subscribe(topic, { qos: 0 }, (err) => {
     if (err) {
@@ -80,7 +88,7 @@ function subscribeToTopic(topic: string) {
   });
 }
 
-function unsubscribeToTopic(topic: string) {
+export function unsubscribeToTopic(topic: string) {
   console.log(`Unsubscribing to Topic: ${topic}`);
 
   mqttClient.unsubscribe(topic, (err) => {
