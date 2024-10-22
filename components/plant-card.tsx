@@ -15,10 +15,10 @@ export const PlantCard = ({ plant }: { plant: PlantSchema }) => {
           </div>
           <div className="border p-4 rounded-lg">
             <div className="w-full flex items-center justify-around object-contain overflow-x-auto">
-              <PercentageCol type="humidity" value={plant.humidity} />
-              <PercentageCol type="moisture" value={plant.moisture} />
-              <PercentageCol type="temperature" value={plant.temperature} />
-              <PercentageCol type="light" value={plant.light} />
+              <PercentageCol type="humidity" plant={plant}/>
+              <PercentageCol type="moisture" plant={plant}/>
+              <PercentageCol type="temperature" plant={plant}/>
+              <PercentageCol type="light" plant={plant}/>
             </div>
           </div>
         </div>

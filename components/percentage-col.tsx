@@ -1,5 +1,9 @@
 "use client";
 import BasicGauges from "@/components/gauge-chart";
+import { getPlantsRef } from "@/lib/db";
+import { PlantSchema } from "@/schemas";
+import { child, DatabaseReference, off, onValue } from "firebase/database";
+import { useEffect, useState } from "react";
 
 type SensorType = "humidity" | "temperature" | "moisture" | "light";
 interface SensorSchema {
@@ -11,48 +15,70 @@ interface SensorSchema {
 }
 interface PercentageColProps {
   type: SensorType;
-  value: number | undefined;
+  plant: PlantSchema;
 }
 
-export const PercentageCol = ({ type, value }: PercentageColProps) => {
-  let sensor: SensorSchema = {} as SensorSchema;
-  switch (type) {
-    case "humidity":
-      sensor = {
-        type: "humidity",
-        value: value || NaN,
-        label: "Độ ẩm không khí",
-        unit: value ? "%" : " ",
-        valueMax: 100,
-      };
-      break;
-    case "temperature":
-      sensor = {
-        type: "temperature",
-        value: value || NaN,
-        label: "Nhiệt độ không khí",
-        unit: value ? "°C" : "",
-        valueMax: 50,
-      };
-      break;
-    case "moisture":
-      sensor = {
-        type: "moisture",
-        value: value || NaN,
-        label: "Độ ẩm đất",
-        unit: value ? "%": "",
-        valueMax: 100,
-      };
-      break;
-    case "light":
-      sensor = {
-        type: "light",
-        value: value || NaN,
-        label: "Ánh sáng",
-        unit: value ? "lux" : "",
-        valueMax: 1000,
-      };
-      break;
+const matchTypeProps = {
+  "temperature": {
+    label: "Nhiệt độ không khí",
+    unit: "°C",
+    valueMax: 50,
+  },
+  "humidity" : {
+    label: "Độ ẩm không khí",
+    unit: "%",
+    valueMax: 100,
+  },
+  "moisture" : {
+    label: "Độ ẩm đất",
+    unit: "%",
+    valueMax: 100,
+  },
+  "light": {
+    label: "Ánh sáng",
+    unit: "lux",
+    valueMax: 1000,
+  },
+}
+
+export const PercentageCol = ({ type, plant }: PercentageColProps) => {
+  const [sensor, setSensor] = useState({
+    type,
+    value: plant[type],
+    label: matchTypeProps[type].label,
+    unit: matchTypeProps[type].unit,
+    valueMax: matchTypeProps[type].valueMax,
+  } as SensorSchema);
+  const plantsRef: DatabaseReference = getPlantsRef();
+  const sensorRef = child(plantsRef, `${plant.id}/${type}`);
+
+  useEffect(() => {
+    onValue(
+      sensorRef,
+      (snapshot) => {
+        const data = snapshot.val();
+        if (!data) {
+          console.error("Plant data not found");
+          return;
+        }
+        setSensor({
+          type,
+          label: matchTypeProps[type].label,
+          valueMax: matchTypeProps[type].valueMax,
+          value: data ? Number(data) : plant[type] || NaN,
+          unit: data ? matchTypeProps[type].unit : "",
+        });
+      },
+      (error) => {
+        console.error("Error fetching data:", error);
+      }
+    );
+    return () => off(sensorRef);
+  }, [sensor, plant, type, plantsRef]);
+
+  if (!plant.id) {
+    console.error("Plant ID not found");
+    return null;
   }
 
   return (

@@ -22,12 +22,14 @@ let app: FirebaseApp = initializeApp(firebaseConfig);
 // const auth = getAuth(app);
 let db: Database;
 
+const dbUrl = "https://smartwater-430c8-default-rtdb.asia-southeast1.firebasedatabase.app"
+
 export const getPlantsRef = () => {
   if (!app) {
     app = initializeApp(firebaseConfig);
   }
   if (!db) {
-    db = getDatabase(app);
+    db = getDatabase(app, dbUrl);
   }
   return ref(db, "plants");
 };
@@ -37,7 +39,7 @@ export const getActivityLogsRef = () => {
     app = initializeApp(firebaseConfig);
   }
   if (!db) {
-    db = getDatabase(app);
+    db = getDatabase(app, dbUrl);
   }
   return ref(db, "activity_logs");
 };

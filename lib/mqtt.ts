@@ -9,6 +9,7 @@ import { getTodayString } from "@/lib/utils";
 import { DayLogSchema } from "@/schemas";
 import { child, push } from "firebase/database";
 import { getPlantsRef } from "./db";
+import { topics } from "./constaints";
 
 let mqttClient: mqtt.MqttClient;
 const plantsRef = getPlantsRef();
@@ -38,7 +39,7 @@ export const connectToMqtt = (planId: string) => {
     clean: true,
   };
 
-  mqttClient = mqtt.connect(nt531Host, nt531Options);
+  mqttClient = mqtt.connect(hiveHost, hiveOptions);
 
   mqttClient.on("error", (err) => {
     console.error("Error connecting to MQTT broker:", err);
@@ -53,19 +54,19 @@ export const connectToMqtt = (planId: string) => {
   });
 
   mqttClient.on("message", function (topic, message) {
-    if (topic === "sensor/DHT11/temperature") {
+    if (topic === topics.temperature) {
       temperature = message.toString();
       updateCurrentTemperature("0", Number(temperature));
       console.log("Temperature: ", temperature);
-    } else if (topic === "sensor/DHT11/humidity") {
+    } else if (topic === topics.humidity) {
       humidity = message.toString();
       updateCurrentHumidity("0", Number(humidity));
       console.log("Humidity: ", humidity);
-    } else if (topic === "sensor/BH1750/lux") {
+    } else if (topic === topics.light) {
       light = message.toString();
       updateCurrentLight("0", Number(light));
       console.log("Light: ", light);
-    } else if (topic === "sensor/soil_sensor/soilMoisture") {
+    } else if (topic === topics.moisture) {
       moisture = message.toString();
       updateCurrentMoisture("0", Number(moisture));
       console.log("Moisture: ", moisture);
