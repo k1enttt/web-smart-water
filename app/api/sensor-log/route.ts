@@ -1,13 +1,11 @@
-"use server";
 import dbConnect from "@/lib/dbConnect";
-import Activity from "@/models/Activity";
-import { NextApiRequest, NextApiResponse } from "next";
+import SensorLog from "@/models/SensorLog";
 
 export async function GET() {
   await dbConnect();
 
   try {
-    const response = await Activity.find();
+    const response = await SensorLog.find();
     if (!response) {
       return Response.json({ success: false }, { status: 400 });
     }
