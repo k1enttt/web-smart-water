@@ -2,7 +2,7 @@ import dbConnect from "@/lib/dbConnect";
 import PlantUnit from "@/models/PlantUnit";
 import { NextApiRequest, NextApiResponse } from "next";
 
-export async function GET(req: NextApiRequest, res: NextApiResponse) {
+export async function GET() {
   await dbConnect();
 
   try {

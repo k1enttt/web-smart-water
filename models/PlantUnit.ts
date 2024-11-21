@@ -3,6 +3,8 @@ import mongoose from "mongoose";
 export interface PlantUnit extends mongoose.Document {
   plant_type_id: mongoose.Types.ObjectId;
   user_id: mongoose.Types.ObjectId;
+  name: string;
+  description: string;
   age: number;
   water_velocity: number;
   total_water_volumn: number;
@@ -21,6 +23,17 @@ const PlantUnitSchema = new mongoose.Schema<PlantUnit>({
 
     type: mongoose.Schema.Types.ObjectId,
     required: true
+  },
+  name: {
+    // Tên của cây, 1 cây có 1 tên và khác với tên loại cây
+
+    type: String,
+    required: true
+  },
+  description: {
+    // Mô tả về cây
+
+    type: String
   },
   age: {
     // Tuổi hiện tại của cây

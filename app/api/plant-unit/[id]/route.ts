@@ -1,11 +1,10 @@
 import dbConnect from "@/lib/dbConnect";
 import PlantUnit from "@/models/PlantUnit";
 import { NextApiRequest, NextApiResponse } from "next";
+import { NextRequest } from "next/server";
 
-export async function GET(req: NextApiRequest, res: NextApiResponse) {
-  const {
-    query: { id },
-  } = req;
+export async function GET({ params }: { params: { id: string } }) {
+  const { id } = params;
 
   await dbConnect();
 
@@ -20,22 +19,23 @@ export async function GET(req: NextApiRequest, res: NextApiResponse) {
   }
 }
 
-export async function PUT(req: NextApiRequest, res: NextApiResponse) {
-  const {
-    query: { id },
-  } = req;
+export async function PUT(req: NextRequest, { params }: { params: { id: string } }) {
+  const { id } = params;
+
+  const body = await req.json();
+  const { plantunit } = body;
 
   await dbConnect();
 
   try {
-    const plantUnit = await PlantUnit.findByIdAndUpdate(id, req.body, {
+    const response = await PlantUnit.findByIdAndUpdate(id, plantunit, {
       new: true,
       runValidators: true,
     });
-    if (!plantUnit) {
+    if (!response) {
       return Response.json({ success: false }, { status: 200 });
     }
-    return Response.json({ success: true, data: plantUnit }, { status: 200 });
+    return Response.json({ success: true, data: response }, { status: 200 });
   } catch (error) {
     return Response.json({ success: false }, { status: 400 });
   }

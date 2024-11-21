@@ -1,38 +1,41 @@
 import dbConnect from "@/lib/dbConnect";
 import Device from "@/models/Device";
 import { NextApiRequest, NextApiResponse } from "next";
+import { NextRequest } from "next/server";
 
-export async function GET(req: NextApiRequest, res: NextApiResponse) {
-  const {
-    query: { id },
-  } = req;
+export async function GET({ params }: { params: { id: string } }) {
+  const { id } = params;
 
   await dbConnect();
 
   try {
-    const device = await Device.findById(id);
-    if (!device) {
+    const response = await Device.findById(id);
+    if (!response) {
       return Response.json({ success: false }, { status: 400 });
     }
-    return Response.json({ success: true, data: device }, { status: 200 });
+    return Response.json({ success: true, data: response }, { status: 200 });
   } catch (error) {
     return Response.json({ success: false }, { status: 400 });
   }
 }
 
-export async function PUT(req: NextApiRequest, res: NextApiResponse) {
-  const {
-    query: { id },
-  } = req;
+export async function PUT(
+  req: NextRequest,
+  { params }: { params: { id: string } }
+) {
+  const { id } = params;
+
+  const body = await req.json();
+  const { device } = body;
 
   await dbConnect();
 
   try {
-    const device = await Device.findByIdAndUpdate(id, req.body);
-    if (!device) {
+    const response = await Device.findByIdAndUpdate(id, device);
+    if (!response) {
       return Response.json({ success: false }, { status: 400 });
     }
-    return Response.json({ success: true, data: device }, { status: 200 });
+    return Response.json({ success: true, data: response }, { status: 200 });
   } catch (error) {
     return Response.json({ success: false }, { status: 400 });
   }
