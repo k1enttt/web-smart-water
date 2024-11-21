@@ -5,6 +5,7 @@ export interface Device extends mongoose.Document {
   mac_address: string;
   name: string;
   status: string;
+  is_automatic: boolean;
 }
 
 const DeviceSchema = new mongoose.Schema<Device>({
@@ -26,6 +27,11 @@ const DeviceSchema = new mongoose.Schema<Device>({
   status: {
     // Trạng thái của thiết bị
     type: String,
+    required: true
+  },
+  is_automatic: {
+    // Có tự động tưới nước không
+    type: Boolean,
     required: true
   }
 })

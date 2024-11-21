@@ -1,156 +1,145 @@
 import { PlantSchema } from "@/schemas";
 import { child, get, set } from "firebase/database";
-import { env } from "process";
 import { plantsRef } from "./firebase";
 import { NextResponse } from "next/server";
+import { mutate } from "swr";
+import { PlantUnit } from "@/models/PlantUnit";
+import { ObjectId } from "mongoose";
 export let plants: PlantSchema[] = [];
 
-const baseUrl = env.BASE_URL || "http://localhost:3000";
-const baseApiUrl = `${baseUrl}/api`;
-
-export const getPlants = async () => {
-  const response: NextResponse = await fetch(`${baseApiUrl}/plants`,{
+export const getPlantUnits = async () => {
+  const response = await fetch("api/plant-unit", {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
     },
-    cache: "no-store",
-  }).then(
-    (response) => response.json()
-  );
+    // cache: "no-store",
+  });
 
-  if (!response.status || response.status !== 200) {
-    return [];
+  if (!response.ok) {
+    throw new Error("Failed to fetch plant units");
   }
 
-  if (!response.body) {
-    return [];
-  }
+  const data = await response.json();
 
-  const plantList = Object.values(response.body);
+  mutate("api/plant-unit", data, false);
 
-  return plantList;
+  return data.data;
 };
-
-export async function updateServerManualMode(  
-  plantId: string | undefined,
-  value: number
-) {
-  if (!plantId) {
-    console.error("Plant ID is required");
-    return 0;
-  }
-
-  if (value !== 1 && value !== 0) {
-    console.error("Invalid value: ", value);
-    return 0;
-  }
-
-  const response: NextResponse = await fetch(`${baseApiUrl}/plants/${plantId}/manual_mode`, {
-    method: "PUT",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ 
-      server: value
-    }),
-  }).then((response) => response.json());
-
-  
-  if (!response || response.status !== 200) {
-    console.error(response);
-    return 0;
-  }
-
-  return 1;
-}
 
 /** Send a PUT request to localhost:3000/api/plants/[id] to update the "water_button_state" attribute */
-export const updatePlantWaterStatus = async (
-  plantId: string | undefined,
-  water_button_state: boolean,
-) => {
+export const putPlantUnitStatus = async (params: {
+  plantId: ObjectId;
+  status: boolean;
+}) => {
+  const { plantId, status } = params;
+
   if (!plantId) {
     console.error("Plant ID is required");
     return 0;
   }
-  
-  const response: NextResponse = await fetch(`${baseApiUrl}/plants/${plantId}`, {
+
+  const response = await fetch(`api/plant-unit/${plantId}`, {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({ 
-      water_button_state: water_button_state ,
+    body: JSON.stringify({
+      status,
     }),
-  }).then((response) => response.json());
+  });
 
-  if (!response || response.status !== 200) {
-    console.error(response);
-    return 0;
+  if (!response.ok) {
+    throw new Error("Failed to update plant unit status");
   }
 
-  return 1;
+  const data = await response.json();
+
+  return data;
 };
 
-export const updateAutomaticSwitchState = async (
-  id: string | undefined,
-  state: number
-) => {
+export const putDeviceAutomation = async (params: {
+  id: ObjectId;
+  is_automatic: boolean;
+}) => {
+  const { id, is_automatic } = params;
+
   // Update the plant in the firebase database
   if (!id) {
-    console.error("Plant ID is required");
-    return 0;
+    throw new Error("Plant ID is required");
   }
-  if (state !== 1 && state !== 2) {
-    console.error("Invalid state: ", state);
-    return 0;
-  }
-  const response: NextResponse = await fetch(
-    `${baseUrl}/plants/${id}`,
-    {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ water_mode: state }),
-    }
-  ).then((response) => response.json());
 
-  if (!response || response.status !== 200) {
-    console.error(response);
-    return 0;
+  const response = await fetch(`api/device/${id}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ is_automatic }),
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to update device");
   }
-  return 1;
+
+  const data = await response.json();
+
+  return data;
 };
 
-export const getPlantById = async (id: string) =>
-  await get(child(plantsRef, `/${id}`));
+export const getPlantById = async (params: { id: ObjectId }) => {
+  const { id } = params;
 
-export const updatePlantData = async (plant: PlantSchema) => {
-  // Update the plant in the firebase database
-  await set(child(plantsRef, `/${plant.id}`), {
-    ...plant,
-  })
-    .then((response) => response)
-    .catch((error) => {
-      console.log(error);
-      return 0;
-    });
-  return 1;
+  const response = await fetch(`api/plant-unit/${id}`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to fetch plant unit");
+  }
+
+  const data = await response.json();
+
+  return data.data;
 };
 
-export const updatePlant = async (plant: PlantSchema) => {
-  return await plants.splice(
-    plants.findIndex((p) => p.id === plant.id),
-    1,
-    plant
-  );
+export const putPlantUnit = async (params: { plant_unit: PlantUnit }) => {
+  const { plant_unit } = params;
+
+  const response = await fetch(`api/plant-unit/${plant_unit._id}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(plant_unit),
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to update plant unit");
+  }
+
+  const data = await response.json();
+
+  return data;
 };
 
-export const deletePlant = async (id: string) => {
-  return await plants.splice(
-    plants.findIndex((plant) => plant.id === id),
-    1
-  );
+export const deletePlant = async (params: {id: ObjectId}) => {
+  const { id } = params;
+
+  const response = await fetch(`api/plant-unit/${id}`, {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to delete plant unit");
+  }
+
+  const data = await response.json();
+
+  return data;
 };

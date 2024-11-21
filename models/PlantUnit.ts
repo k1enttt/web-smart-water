@@ -5,7 +5,8 @@ export interface PlantUnit extends mongoose.Document {
   user_id: mongoose.Types.ObjectId;
   age: number;
   water_velocity: number;
-  total_water_volumn: number
+  total_water_volumn: number;
+  status: "dry" | "normal" | "wet";
 }
 
 const PlantUnitSchema = new mongoose.Schema<PlantUnit>({
@@ -36,6 +37,13 @@ const PlantUnitSchema = new mongoose.Schema<PlantUnit>({
     // Tổng thể tích nước đã tưới cho cây
 
     type: Number,
+    required: true
+  },
+  status: {
+    // Trạng thái của cây
+
+    type: String,
+    enum: ["dry", "normal", "wet"],
     required: true
   }
 })
