@@ -1,35 +1,32 @@
 import { Switch } from "@/components/ui/switch";
-import { updateAutomaticSwitchState } from "@/lib/plants";
-import { PlantSchema } from "@/schemas";
+import { putPlantUnit } from "@/lib/plant-unit";
+import { PlantUnit } from "@/models/PlantUnit";
 import { useState, useTransition } from "react";
 
-export const AutomaticWateringSwitch = ({plant} : {plant: PlantSchema}) => {
+export const AutomaticWateringSwitch = ({ plant }: { plant: PlantUnit }) => {
   const [isPending, startTransition] = useTransition();
-  const [waterMode, setWaterMode] = useState(plant.water_mode || 2);
+  const [waterMode, setWaterMode] = useState(plant.automatic_watering || false);
 
   const handleSwitch = async () => {
     startTransition(async () => {
-
-      // Update local state, value 1 is automatic watering mode, value 2 is manual watering mode
-      let updatedMode = waterMode;
-      if (waterMode === 1) {
-        updatedMode = 2;
-      } else {
-        updatedMode = 1;
-      }
-      // Update database
-      const result = await updateAutomaticSwitchState(plant.id, updatedMode);
-
-      if (!result) {return;}
-
-      setWaterMode(updatedMode);
+      // Update the automatic watering mode to Mongo Atlas
+      await putPlantUnit({
+        ...plant,
+        automatic_watering: !waterMode,
+      } as PlantUnit);
     });
   };
+
+  // TODO: Add a listener for changes in the automatic watering mode on MongoDB
 
   return (
     <div className="w-full flex items-center px-16 space-x-6">
       <div>Tưới cây tự động</div>
-      <Switch checked={plant.water_mode === 1} onCheckedChange={handleSwitch} disabled={isPending}/>
+      <Switch
+        checked={plant.automatic_watering}
+        onCheckedChange={handleSwitch}
+        disabled={isPending}
+      />
     </div>
   );
 };

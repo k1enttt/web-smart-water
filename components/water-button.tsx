@@ -3,7 +3,6 @@ import { useEffect, useState } from "react";
 import { useTransition } from "react";
 
 import { Button } from "@/components/ui/button";
-import { updateServerManualMode } from "@/lib/plants";
 import { PlantSchema } from "@/schemas";
 import { useToast } from "@/components/ui/use-toast";
 import { getFullDateString, waitForEnoughWater } from "@/lib/utils";
@@ -17,13 +16,9 @@ export const WaterButton = ({ plant }: { plant: PlantSchema }) => {
 
   // Update the water button state to Firebase
   async function updateState(value: boolean) {
-    // Update database
-    const result = await updateServerManualMode(plant.id, value ? 1 : 0);
 
-    if (!result) {
-      console.error("Failed to update the water button state!");
-      return 0;
-    }
+    // TODO: Send message to topic "watering" on the MQTT server to control the water pump
+
     setIsWatered(value);
     console.log("Watering plant...");
     return 1;

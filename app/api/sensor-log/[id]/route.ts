@@ -12,7 +12,7 @@ export async function GET({ params }: { params: { id: string } }) {
     if (!response) {
       return Response.json({ success: false }, { status: 400 });
     }
-    return Response.json({ success: true, data: response }, { status: 200 });
+    return Response.json({ success: true, body: response }, { status: 200 });
   } catch (error) {
     return Response.json({ success: false }, { status: 400 });
   }
@@ -26,7 +26,7 @@ export async function POST(req: NextRequest) {
 
   try {
     const response = await SensorLog.create(sensorlog);
-    return Response.json({ success: true, data: response }, { status: 201 });
+    return Response.json({ success: true, body: response }, { status: 201 });
   } catch (error) {
     return Response.json({ success: false }, { status: 400 });
   }
@@ -51,7 +51,7 @@ export async function PUT(
     if (!response) {
       return Response.json({ success: false }, { status: 200 });
     }
-    return Response.json({ success: true, data: response }, { status: 200 });
+    return Response.json({ success: true, body: response }, { status: 200 });
   } catch (error) {
     return Response.json({ success: false }, { status: 400 });
   }

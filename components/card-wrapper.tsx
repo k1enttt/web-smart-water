@@ -18,7 +18,7 @@ interface CardWrapperProps {
   plant: PlantSchema;
   className?: string;
 }
-
+// FIXME: Use PlantUnit instead of PlantSchema
 const CardWrapper = ({ children, plant, className }: CardWrapperProps) => {
   const defaultName = "New plant";
  className = className || "";
