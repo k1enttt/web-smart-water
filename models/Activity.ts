@@ -1,13 +1,13 @@
 import mongoose from "mongoose";
 
-export interface Activity extends mongoose.Document {
+export interface Activities extends mongoose.Document {
   plant_unit_id: mongoose.Types.ObjectId;
   type: string;
   message: string;
   timestamp: Date
 }
 
-const ActivitySchema = new mongoose.Schema<Activity>({
+const ActivitySchema = new mongoose.Schema<Activities>({
   plant_unit_id: {
     // Khóa ngoại tham chiếu đến cây
     type: mongoose.Schema.Types.ObjectId,
@@ -30,4 +30,4 @@ const ActivitySchema = new mongoose.Schema<Activity>({
   }
 })
 
-export default mongoose.models.Activity || mongoose.model<Activity>("Activity", ActivitySchema)
+export default mongoose.models.Activity || mongoose.model<Activities>("Activity", ActivitySchema)

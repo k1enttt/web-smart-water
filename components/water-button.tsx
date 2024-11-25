@@ -1,18 +1,41 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useTransition } from "react";
 
 import { Button } from "@/components/ui/button";
-import { PlantSchema } from "@/schemas";
 import { useToast } from "@/components/ui/use-toast";
 import { getFullDateString, waitForEnoughWater } from "@/lib/utils";
+import { PlantUnits } from "@/models/PlantUnit";
+import { SensorLog } from "@/models/SensorLog";
+import { PlantType } from "@/models/PlantType";
 // import { updateActivityLog } from "@/lib/activity-log";
 
-export const WaterButton = ({ plant }: { plant: PlantSchema }) => {
+export const WaterButton = ({ plant }: { plant: PlantUnits }) => {
   const [isPending, startTransition] = useTransition();
-  const [isWatered, setIsWatered] = useState(plant.water_button_state || false);
+  // const [isWatered, setIsWatered] = useState(plant.water_button_state || false);
+  const [isWatered, setIsWatered] = useState(false);
+  // isWatering is the state of the water process, if the device is watering, it send to the server the state of the water pump
+  const [isWatering, setIsWatering] = useState(false);
   const { toast } = useToast();
   const wateringTimeout = 10000;
+
+  // TODO: Get the sensor logs data from MongoDB and get the lastest data corresponding to the plant ID
+  const sensorLog = {
+    temperature: 0,
+    humidity: 0,
+    moisture: 0,
+    light: 0,
+    timestamp: new Date(),
+  } as SensorLog;
+
+  // TODO: Get the plant type from MongoDB and get the one corresponding to the plant ID
+  const plantType = {
+    name: "Cây cỏ",
+    description: "Cây cỏ",
+    high_moisture_threshold: 70,
+    low_moisture_threshold: 30,
+    image_url: "",
+  } as PlantType;
 
   // Update the water button state to Firebase
   async function updateState(value: boolean) {
@@ -67,7 +90,7 @@ export const WaterButton = ({ plant }: { plant: PlantSchema }) => {
       });
 
       // The moisture is not available
-      if (!plant.moisture) {
+      if (!sensorLog.moisture) {
         toast({
           title: "Không thể đọc dữ liệu cảm biến độ ẩm đất! 🌧️",
           description: "Vui lòng kiểm tra lại cảm biến độ ẩm đất!",
@@ -77,7 +100,7 @@ export const WaterButton = ({ plant }: { plant: PlantSchema }) => {
       }
 
       // The high threshold is not available
-      if (!plant.high_threshold) {
+      if (!plantType.high_moisture_threshold) {
         toast({
           title: "Không thể đọc dữ liệu ngưỡng cao của độ ẩm đất!",
           description: "Vui lòng kiểm tra lại!",
@@ -87,7 +110,7 @@ export const WaterButton = ({ plant }: { plant: PlantSchema }) => {
       }
 
       // The low threshold is not available
-      if (!plant.low_threshold) {
+      if (!plantType.low_moisture_threshold) {
         toast({
           title: "Không thể đọc dữ liệu ngưỡng thấp của độ ẩm đất!",
           description: "Vui lòng kiểm tra lại!",
@@ -97,7 +120,7 @@ export const WaterButton = ({ plant }: { plant: PlantSchema }) => {
       }
 
       // The manual mode is turned off
-      if (plant.water_mode !== 2) {
+      if (plant.automatic_watering) {
         toast({
           title: "Chế độ tưới thủ công đang bị tắt! 🚫",
           description: "Vui lòng bật chế độ tưới thủ công để tiếp tục.",
@@ -108,7 +131,7 @@ export const WaterButton = ({ plant }: { plant: PlantSchema }) => {
 
       // The soil moisture is too high
       const now = new Date();
-      if (plant.moisture >= plant.high_threshold) {
+      if (sensorLog.moisture >= plantType.high_moisture_threshold) {
         toast({
           title: "Độ ẩm đất quá cao! 💦",
           description: getFullDateString(now.toLocaleString()),
@@ -179,26 +202,26 @@ export const WaterButton = ({ plant }: { plant: PlantSchema }) => {
   }
 
   /** Process the watering event */
-  useEffect(() => {
-    const waterState = plant.manual_mode?.server;
-    if (waterState === 1) {
-      if (plant.moisture && plant.low_threshold && plant.high_threshold) {
-        setIsWatered(true);
-        water({
-          moisture: plant.moisture || 0,
-          threshold: (plant.high_threshold + plant.low_threshold) / 2,
-          timeout: wateringTimeout,
-        });
-      }
-    }
-  }, [plant.manual_mode?.server]);
+  // useEffect(() => {
+  //   const waterState = plant.manual_mode?.server;
+  //   if (waterState === 1) {
+  //     if (plant.moisture && plant.low_threshold && plant.high_threshold) {
+  //       setIsWatered(true);
+  //       water({
+  //         moisture: plant.moisture || 0,
+  //         threshold: (plant.high_threshold + plant.low_threshold) / 2,
+  //         timeout: wateringTimeout,
+  //       });
+  //     }
+  //   }
+  // }, [plant.manual_mode?.server]);
 
   return (
     <Button
       disabled={
-        isPending || plant.water_mode === 1 || plant.manual_mode?.server === 1
+        isPending || plant.automatic_watering
       }
-      variant={plant.water_button_state ? "secondary" : "default"}
+      variant={isWatering ? "secondary" : "default"}
       onClick={handleClick}
       className=""
     >

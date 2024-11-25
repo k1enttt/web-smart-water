@@ -20,12 +20,11 @@ export async function GET({ params }: { params: { id: string } }) {
 
 export async function POST(req: NextRequest) {
   const body = await req.json();
-  const { planttype } = body;
 
   await dbConnect();
 
   try {
-    const response = await PlantType.create(planttype);
+    const response = await PlantType.create(body);
     return Response.json({ success: true, body: response }, { status: 201 });
   } catch (error) {
     return Response.json({ success: false }, { status: 400 });
@@ -36,12 +35,11 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
   const { id } = params;
 
   const body = await req.json();
-  const { planttype } = body;
 
   await dbConnect();
 
   try {
-    const response = await PlantType.findByIdAndUpdate(id, planttype, {
+    const response = await PlantType.findByIdAndUpdate(id, body, {
       new: true,
       runValidators: true,
     });

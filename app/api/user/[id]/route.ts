@@ -20,12 +20,11 @@ export async function GET({ params }: { params: { id: string } }) {
 
 export async function POST(req: NextRequest) {
   const body = await req.json();
-  const { user } = body;
 
   await dbConnect();
 
   try {
-    const response = await User.create(user);
+    const response = await User.create(body);
     return Response.json({ success: true, body: response }, { status: 201 });
   } catch (error) {
     return Response.json({ success: false }, { status: 400 });
@@ -39,12 +38,11 @@ export async function PUT(
   const { id } = params;
 
   const body = await req.json();
-  const { user } = body;
 
   await dbConnect();
 
   try {
-    const response = await User.findByIdAndUpdate(id, user, {
+    const response = await User.findByIdAndUpdate(id, body, {
       new: true,
       runValidators: true,
     });

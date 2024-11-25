@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-export interface PlantUnit extends mongoose.Document {
+export interface PlantUnits extends mongoose.Document {
   plant_type_id: mongoose.Types.ObjectId;
   user_id: mongoose.Types.ObjectId;
   plant_name: string;
@@ -15,7 +15,7 @@ export interface PlantUnit extends mongoose.Document {
   automatic_watering: boolean;
 }
 
-const PlantUnitSchema = new mongoose.Schema<PlantUnit>({
+export const PlantUnitSchema = new mongoose.Schema<PlantUnits>({
   plant_type_id: {
     // Khóa ngoại tham chiếu loại cây
 
@@ -89,4 +89,4 @@ const PlantUnitSchema = new mongoose.Schema<PlantUnit>({
   }
 })
 
-export default mongoose.models.PlantUnit || mongoose.model<PlantUnit>("PlantUnit", PlantUnitSchema)
+export default mongoose.models.PlantUnit || mongoose.model<PlantUnits>("PlantUnit", PlantUnitSchema)

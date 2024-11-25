@@ -1,8 +1,8 @@
 import { Activity } from "@/models/Activity";
-import { mutate } from "swr";
+import { env } from "process";
 
 export const getActivities = async () => {
-  const response = await fetch('api/activity', {
+  const response = await fetch(`${env.BASE_URL}/api/activity`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
@@ -15,13 +15,11 @@ export const getActivities = async () => {
 
   const data = await response.json();
 
-  mutate("api/activity", data, false);
-
   return data.body;
 };
 
 export const getActivityById = async (activity_id: string) => {
-  const response = await fetch(`api/activity/${activity_id}`, {
+  const response = await fetch(`${env.BASE_URL}/api/activity/${activity_id}`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
@@ -42,7 +40,7 @@ export const putActivity = async (params: {
 }) => {
   const { activity } = params;
 
-  const response = await fetch(`api/activity/${activity._id}`, {
+  const response = await fetch(`${env.BASE_URL}/api/activity/${activity._id}`, {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
@@ -63,7 +61,7 @@ export const deleteActivity = async (params: {
   activity_id: string
 }) => {
   const { activity_id } = params;
-   const response = await fetch(`api/activity/${activity_id}`, {
+   const response = await fetch(`/api/activity/${activity_id}`, {
     method: "DELETE",
     headers: {
       "Content-Type": "application/json",
