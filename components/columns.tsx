@@ -31,7 +31,7 @@ export const columns: ColumnDef<Payment>[] = [
 
 export const activityLogColumns: ColumnDef<ActivityLog>[] = [
   {
-    accessorKey: "id",
+    accessorKey: "_id",
     header: "ID",
   },
   {

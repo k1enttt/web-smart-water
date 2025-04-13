@@ -1,29 +1,47 @@
 "use client";
-import { useCallback, useEffect, useState } from "react";
+import { useState } from "react";
 import { useTransition } from "react";
 
 import { Button } from "@/components/ui/button";
-import { PlantSchema } from "@/schemas";
 import { useToast } from "@/components/ui/use-toast";
 import { getFullDateString, waitForEnoughWater } from "@/lib/utils";
-import { updateActivityLog } from "@/lib/activity-log";
-import { updatePlantWaterStatus } from "@/lib/plants";
+import { PlantUnits } from "@/models/PlantUnit";
+import { SensorLog } from "@/models/SensorLog";
+import { PlantType } from "@/models/PlantType";
+// import { updateActivityLog } from "@/lib/activity-log";
 
-export const WaterButton = ({ plant }: { plant: PlantSchema }) => {
+export const WaterButton = ({ plant }: { plant: PlantUnits }) => {
   const [isPending, startTransition] = useTransition();
-  const [isWatered, setIsWatered] = useState(plant.water_button_state || false);
+  // const [isWatered, setIsWatered] = useState(plant.water_button_state || false);
+  const [isWatered, setIsWatered] = useState(false);
+  // isWatering is the state of the water process, if the device is watering, it send to the server the state of the water pump
+  const [isWatering, setIsWatering] = useState(false);
   const { toast } = useToast();
   const wateringTimeout = 10000;
 
+  // TODO: Get the sensor logs data from MongoDB and get the lastest data corresponding to the plant ID
+  const sensorLog = {
+    temperature: 0,
+    humidity: 0,
+    moisture: 0,
+    light: 0,
+    timestamp: new Date(),
+  } as SensorLog;
+
+  // TODO: Get the plant type from MongoDB and get the one corresponding to the plant ID
+  const plantType = {
+    name: "Cây cỏ",
+    description: "Cây cỏ",
+    high_moisture_threshold: 70,
+    low_moisture_threshold: 30,
+    image_url: "",
+  } as PlantType;
+
   // Update the water button state to Firebase
   async function updateState(value: boolean) {
-    // Update database
-    const result = await updatePlantWaterStatus(plant.id, value);
 
-    if (!result) {
-      console.error("Failed to update the water button state!");
-      return 0;
-    }
+    // TODO: Send message to topic "watering" on the MQTT server to control the water pump
+
     setIsWatered(value);
     console.log("Watering plant...");
 
@@ -53,17 +71,89 @@ export const WaterButton = ({ plant }: { plant: PlantSchema }) => {
       second: "2-digit",
     });
 
-    await updateActivityLog({
-      message: message,
-      time: updateTime,
-      type: type,
-      device_mac: device_mac || "",
-      plant_id: plant_id || "",
-    });
+    // await updateActivityLog({
+    //   message: message,
+    //   time: updateTime,
+    //   type: type,
+    //   device_mac: device_mac || "",
+    //   plant_id: plant_id || "",
+    // });
   }
 
-  // Exercute the watering process
-  const water = useCallback(async function({
+  /** Handle the water button click event */
+  const handleClick = async () => {
+    startTransition(async () => {
+      let result;
+
+      recordActivityLog({
+        message: "Bấm nút tưới cây",
+        type: "SUCCESS",
+        device_mac: plant.device_mac,
+        plant_id: plant.id,
+      });
+
+      // The moisture is not available
+      if (!sensorLog.moisture) {
+        toast({
+          title: "Không thể đọc dữ liệu cảm biến độ ẩm đất! 🌧️",
+          description: "Vui lòng kiểm tra lại cảm biến độ ẩm đất!",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      // The high threshold is not available
+      if (!plantType.high_moisture_threshold) {
+        toast({
+          title: "Không thể đọc dữ liệu ngưỡng cao của độ ẩm đất!",
+          description: "Vui lòng kiểm tra lại!",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      // The low threshold is not available
+      if (!plantType.low_moisture_threshold) {
+        toast({
+          title: "Không thể đọc dữ liệu ngưỡng thấp của độ ẩm đất!",
+          description: "Vui lòng kiểm tra lại!",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      // The manual mode is turned off
+      if (plant.automatic_watering) {
+        toast({
+          title: "Chế độ tưới thủ công đang bị tắt! 🚫",
+          description: "Vui lòng bật chế độ tưới thủ công để tiếp tục.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      // The soil moisture is too high
+      const now = new Date();
+      if (sensorLog.moisture >= plantType.high_moisture_threshold) {
+        toast({
+          title: "Độ ẩm đất quá cao! 💦",
+          description: getFullDateString(now.toLocaleString()),
+          variant: "destructive",
+        });
+        return;
+      }
+
+      // Start watering the plant
+      result = 0;
+      result = await updateState(true);
+      if (!result) {
+        return;
+      }
+    });
+  };
+
+  /** Exercute the watering process */
+  async function water({
     moisture,
     threshold,
     timeout,
@@ -114,111 +204,27 @@ export const WaterButton = ({ plant }: { plant: PlantSchema }) => {
     });
   }, []);
 
-  // Handle the water button click event
-  const handleClick = async () => {
-    startTransition(async () => {
-    // The moisture is not available
-    if (!plant.moisture) {
-      toast({
-        title: "Không thể đọc dữ liệu cảm biến độ ẩm đất! 🌧️",
-        description: "Vui lòng kiểm tra lại cảm biến độ ẩm đất!",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    // The high threshold is not available
-    if (!plant.high_threshold) {
-      toast({
-        title: "Không thể đọc dữ liệu ngưỡng cao của độ ẩm đất!",
-        description: "Vui lòng kiểm tra lại!",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    // The low threshold is not available
-    if (!plant.low_threshold) {
-      toast({
-        title: "Không thể đọc dữ liệu ngưỡng thấp của độ ẩm đất!",
-        description: "Vui lòng kiểm tra lại!",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    // The manual mode is turned off
-    if (plant.water_mode !== 2) {
-      toast({
-        title: "Chế độ tưới thủ công đang bị tắt! 🚫",
-        description: "Vui lòng bật chế độ tưới thủ công để tiếp tục.",
-        variant: "destructive",
-      });
-      return;
-    }
-    
-      let updateResult = 0;
-
-      recordActivityLog({
-        message: "Bấm nút tưới cây",
-        type: "SUCCESS",
-        device_mac: plant.device_mac,
-        plant_id: plant.id,
-      });
-
-      
-
-      // The soil moisture is too high
-      const now = new Date();
-      if (plant.moisture >= plant.high_threshold) {
-        toast({
-          title: "Độ ẩm đất quá cao! 💦",
-          description: getFullDateString(now.toLocaleString()),
-          variant: "destructive",
-        });
-        return;
-      }
-
-      // Start watering the plant
-      updateResult = 0;
-      updateResult = await updateState(true);
-      if (!updateResult) {
-        return;
-      }
-    });
-  };
-
-  // Handle event that the watering state is changed by the IoT device
-  const handleWaterStateChangeByDevice = useCallback(() => {
-    if (!plant.high_threshold || !plant.low_threshold) {
-      console.error("The high threshold or low threshold is not available!");
-      return;
-    }
-    if (!plant.moisture) {
-      console.error("The moisture is not available!");
-      return;
-    }
-    setIsWatered(true);
-    water({
-      moisture: plant.moisture || 0,
-      threshold: (plant.high_threshold + plant.low_threshold) / 2,
-      timeout: wateringTimeout,
-    });
-  }, [plant.high_threshold, plant.low_threshold, plant.moisture, water]);
-
-  // Process the watering event
-  useEffect(() => {
-    if (plant.manual_mode?.server === 1) {
-        handleWaterStateChangeByDevice();
-    }
-  }, [plant.manual_mode?.server, handleWaterStateChangeByDevice]);
+  /** Process the watering event */
+  // useEffect(() => {
+  //   const waterState = plant.manual_mode?.server;
+  //   if (waterState === 1) {
+  //     if (plant.moisture && plant.low_threshold && plant.high_threshold) {
+  //       setIsWatered(true);
+  //       water({
+  //         moisture: plant.moisture || 0,
+  //         threshold: (plant.high_threshold + plant.low_threshold) / 2,
+  //         timeout: wateringTimeout,
+  //       });
+  //     }
+  //   }
+  // }, [plant.manual_mode?.server]);
 
   return (
     <Button
       disabled={
-        isPending || plant.water_mode === 1 || plant.manual_mode?.server === 1
+        isPending || plant.automatic_watering
       }
-      variant={plant.water_button_state ? "secondary" : "default"}
+      variant={isWatering ? "secondary" : "default"}
       onClick={handleClick}
       className=""
     >
