@@ -3,10 +3,6 @@ import { DataSnapshot } from "firebase/database";
 
 import { DayLogSchema } from "@/schemas";
 import CardWrapper from "@/components/card-wrapper";
-import { PercentageCol } from "@/components/percentage-col";
-import { hours } from "@/data/plant";
-import { PlantLineChart } from "@/components/line-chart";
-import { fillHourlogs, getTodayDaylogs } from "@/lib/utils";
 import PlantInfoCard from "./card-plant-info";
 import { PlantUnits } from "@/models/PlantUnit";
 

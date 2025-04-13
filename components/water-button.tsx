@@ -44,6 +44,9 @@ export const WaterButton = ({ plant }: { plant: PlantUnits }) => {
 
     setIsWatered(value);
     console.log("Watering plant...");
+
+
+
     return 1;
   }
 
@@ -199,7 +202,7 @@ export const WaterButton = ({ plant }: { plant: PlantUnits }) => {
       device_mac: plant.device_mac,
       plant_id: plant.id,
     });
-  }
+  }, []);
 
   /** Process the watering event */
   // useEffect(() => {
