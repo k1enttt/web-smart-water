@@ -1,4 +1,8 @@
+**This repository is no longer maintained. Please visit [new repo link](https://github.com/k1enttt/Smart-Water-Dashboard) for the actively developed version.**
+
 This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+
+# Smart Water Dashboard V1
 
 ## Getting Started
 
