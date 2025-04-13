@@ -1,8 +1,8 @@
 import { LogTable } from "@/components/log-table";
-import { Activity } from "@/models/Activity";
+import { Activities } from "@/models/Activity";
 
 const ActivityLogPage = async () => {
-  const activitiesData: Activity[] = [];
+  const activitiesData: Activities[] = [];
 
   // TODO: Fetch activity logs from MongoDB  
 

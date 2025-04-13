@@ -1,4 +1,4 @@
-import { Activity } from "@/models/Activity";
+import { Activities } from "@/models/Activity";
 import { env } from "process";
 
 export const getActivities = async () => {
@@ -36,7 +36,7 @@ export const getActivityById = async (activity_id: string) => {
 }
 
 export const putActivity = async (params: {
-  activity: Activity
+  activity: Activities
 }) => {
   const { activity } = params;
 

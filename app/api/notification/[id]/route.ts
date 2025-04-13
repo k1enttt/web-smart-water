@@ -2,7 +2,7 @@ import dbConnect from "@/lib/dbConnect";
 import Notification from "@/models/Notification";
 import { NextRequest } from "next/server";
 
-export async function GET({ params }: { params: { id: string } }) {
+export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
   const { id } = params;
 
   await dbConnect();

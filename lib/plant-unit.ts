@@ -1,5 +1,5 @@
-"use server";
-import PlanUnitModel, { PlantUnits } from "@/models/PlantUnit";
+'use server'
+import { PlantUnits } from "@/models/PlantUnit";
 
 export const getPlantUnits = async () => {
   const response = await fetch(`${process.env.BASE_URL}/api/plant-unit`, {
@@ -7,6 +7,7 @@ export const getPlantUnits = async () => {
     headers: {
       "Content-Type": "application/json",
     },
+    cache: "reload",
   });
 
   if (!response.ok) {
@@ -39,7 +40,6 @@ export const getPlantUnitById = async (plant_id: string) => {
 };
 
 export const putPlantUnit = async (plant_unit: PlantUnits) => {
-  console.log(process.env.BASE_URL);
   const response = await fetch(
     `${process.env.BASE_URL}/api/plant-unit/${plant_unit._id}`,
     {
@@ -119,7 +119,7 @@ export const putAutomationWatering = async (
   }
 
   const response = await fetch(
-    `${process.env.NEXT_PUBLIC_BASE_URL}/api/device/${plant_id}`,
+    `${process.env.BASE_URL}/api/device/${plant_id}`,
     {
       method: "PUT",
       headers: {

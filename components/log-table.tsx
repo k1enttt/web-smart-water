@@ -1,6 +1,5 @@
 "use client";
 import { DataTable } from "@/components/data-table";
-import { activityLogsRef } from "@/lib/firebase";
 import { DataSnapshot, onValue } from "firebase/database";
 import { useEffect, useState } from "react";
 import { activityLogColumns } from "@/components/columns";
@@ -20,9 +19,9 @@ export const LogTable = ({ data }: { data: ActivityLog[] }) => {
     setActivityLogsList(activityLogs);
   }
 
-  useEffect(() => {
-    const listener = onValue(activityLogsRef, handleDataChange);
-    return () => listener();
-  }, [activityLogsList]);
+  // useEffect(() => {
+  //   const listener = onValue(activityLogsRef, handleDataChange);
+  //   return () => listener();
+  // }, [activityLogsList]);
   return <DataTable columns={activityLogColumns} data={activityLogsList} />;
 };

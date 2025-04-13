@@ -2,7 +2,7 @@ import dbConnect from "@/lib/dbConnect";
 import PlantUnit from "@/models/PlantUnit";
 import { NextRequest } from "next/server";
 
-export async function GET({ params }: { params: { id: string } }) {
+export async function GET(_: NextRequest, { params }: { params: { id: string } }) {
   const { id } = params;
 
   await dbConnect();

@@ -2,7 +2,7 @@ import dbConnect from "@/lib/dbConnect";
 import SensorLog from "@/models/SensorLog";
 import { NextRequest } from "next/server";
 
-export async function GET({ params }: { params: { id: string } }) {
+export async function GET(_: NextRequest, { params }: { params: { id: string } }) {
   const { id } = params;
 
   await dbConnect();
